@@ -5,7 +5,6 @@ let rules = [];
 let extensionEnabled = true;
 let mossActive = false;
 let processedNodes = new WeakSet();
-let streamingNodes = new WeakMap();
 let currentStats = { totalChecks: 0, violationsCaught: 0 };
 
 // Initialize
@@ -37,7 +36,7 @@ chrome.runtime.onMessage.addListener((message) => {
 // ============================================================
 // DELIVERABLE 1 — PRE-INJECTION SYSTEM
 // Silently appends active rules to user prompts before sending
-// Format: "[ENFORCE: rule1; rule2; rule3]"
+// Format: "[ENFORCE: rule1; rule2; rule3]" (invisible to user)
 // ============================================================
 function setupPreInjection() {
   const getActiveRuleString = () => {
@@ -99,10 +98,21 @@ function setupPreInjection() {
   }, true);
 }
 
+// Hide pre-injected [ENFORCE: ...] string from visible user speech bubbles
+function hideEnforceTextFromUserBubbles() {
+  document.querySelectorAll('*').forEach(el => {
+    if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:')) {
+      el.textContent = el.textContent.replace(/\[ENFORCE:.*?\]/g, '').trim();
+    }
+  });
+}
+
 // Start monitoring DOM for AI chat output
 function startMonitoring() {
   const observer = new MutationObserver((mutations) => {
     if (!extensionEnabled) return;
+    hideEnforceTextFromUserBubbles();
+
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
@@ -138,35 +148,50 @@ function startMonitoring() {
   console.log("[Litigo] Monitoring active — " + (mossActive ? "Moss WASM mode" : "keyword fallback mode"));
 }
 
-// Heuristic: detect if element is likely an AI response
+// Strict Heuristic: ONLY detect AI response elements, NEVER user prompt bubbles or inputs
 function isLikelyAIResponse(el) {
-  if (!el || !el.textContent || el.textContent.trim().length < 15) return false;
+  if (!el || !el.textContent || el.textContent.trim().length < 20) return false;
 
-  const classNames = el.className ? String(el.className).toLowerCase() : '';
   const tagName = el.tagName.toLowerCase();
+  if (['input', 'textarea', 'form', 'button', 'script', 'style', 'nav', 'header'].includes(tagName)) return false;
+  if (el.getAttribute && el.getAttribute('contenteditable') === 'true') return false;
+  if (el.closest && (el.closest('form') || el.closest('.input-area') || el.closest('[contenteditable="true"]') || el.closest('user-query'))) return false;
 
+  // EXCLUDE User message bubbles
+  const classNames = el.className ? String(el.className).toLowerCase() : '';
+  const idStr = el.id ? String(el.id).toLowerCase() : '';
+  const parentClass = el.parentElement?.className ? String(el.parentElement.className).toLowerCase() : '';
+
+  if (classNames.includes('user') || parentClass.includes('user') || idStr.includes('user')) return false;
+  if (el.closest && (el.closest('.user-message') || el.closest('[data-message-author-role="user"]') || el.closest('.user-query-container'))) return false;
+
+  // MUST BE AI Response
   const aiIndicators = [
     'assistant', 'message-ai', 'ai-message', 'bot-message',
-    'response', 'chat-response', 'model-response',
+    'chat-response', 'model-response', 'response-container-content',
     'claude', 'gpt', 'gemini', 'copilot'
   ];
 
-  const parentClass = el.parentElement?.className ? String(el.parentElement.className).toLowerCase() : '';
-
   const hasAIIndicator = aiIndicators.some(ind =>
-    classNames.includes(ind) || parentClass.includes(ind)
+    classNames.includes(ind) || parentClass.includes(ind) || idStr.includes(ind)
   );
-
-  const isStructured = tagName === 'div' &&
-    el.children.length > 0 &&
-    el.textContent.length > 30;
 
   const hasDemoMarker = el.id === 'demo-ai-response' ||
     el.classList.contains('demo-ai-response') ||
     (el.getAttribute && el.getAttribute('data-ai-response') === 'true');
 
-  return hasAIIndicator || hasDemoMarker ||
-    (isStructured && (classNames.includes('message') || classNames.includes('chat')));
+  const isAIMessageRole = el.getAttribute && (
+    el.getAttribute('data-message-author-role') === 'assistant' ||
+    el.getAttribute('data-is-assistant') === 'true'
+  );
+
+  return hasAIIndicator || hasDemoMarker || isAIMessageRole || (
+    tagName === 'div' &&
+    (classNames.includes('message-content') || classNames.includes('markdown') || classNames.includes('model-response')) &&
+    !classNames.includes('user') &&
+    el.children.length > 0 &&
+    el.textContent.length > 30
+  );
 }
 
 // Real-time streaming enforcement + Post-generation validation
@@ -188,7 +213,6 @@ function enforceStreamingWordLimit(element) {
   const lengthRule = rules.find(r => r.enabled && r.type === 'length');
   if (!lengthRule) return;
 
-  // Extract limit from rule text (e.g. "under 50 words" -> 50)
   const limitMatch = lengthRule.text.match(/(\d+)\s*words?/i);
   const limit = limitMatch ? parseInt(limitMatch[1]) : 50;
 
@@ -214,7 +238,7 @@ async function processAIResponse(element) {
   processedNodes.add(element);
 
   const text = element.textContent;
-  if (!text || text.trim().length < 15) return;
+  if (!text || text.trim().length < 20) return;
 
   let violations = [];
   let usedMoss = false;
@@ -412,6 +436,7 @@ function highlightContradiction(element, contradictionClaim) {
 
 // Feed results into EXISTING compliance badge
 function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData) {
+  if (element.children.length > 25) return; // Prevent attaching to entire chat body
   if (element.querySelector('.litigo-badge')) return;
   if (element.closest('.litigo-badge')) return;
 
@@ -438,6 +463,7 @@ function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData
 }
 
 function showCleanBadge(element, usedMoss, truthData) {
+  if (element.children.length > 25) return; // Prevent attaching to entire chat body
   if (element.querySelector('.litigo-badge')) return;
 
   const badge = document.createElement('div');

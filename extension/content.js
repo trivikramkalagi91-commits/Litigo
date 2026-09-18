@@ -109,11 +109,18 @@ function setupPreInjection() {
   }, true);
 }
 
-// Hide pre-injected [ENFORCE: ...] string from visible user speech bubbles across LLM sites
+// Hide pre-injected [ENFORCE: ...] text ONLY inside user chat history speech bubbles, NEVER in input boxes!
 function hideEnforceTextFromUserBubbles() {
-  document.querySelectorAll('*').forEach(el => {
-    if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:')) {
-      el.textContent = el.textContent.replace(/\[ENFORCE:.*?\]/g, '').trim();
+  const userBubbles = document.querySelectorAll('user-query, [data-message-author-role="user"], .user-message, .font-user-message');
+  userBubbles.forEach(el => {
+    if (el.textContent && el.textContent.includes('[ENFORCE:')) {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.textContent.includes('[ENFORCE:')) {
+          node.textContent = node.textContent.replace(/\[ENFORCE:.*?\]/g, '').trim();
+        }
+      }
     }
   });
 }
@@ -184,9 +191,6 @@ function isLikelyAIResponse(el) {
   )) return false;
 
   // DETECT Assistant/Model AI Messages
-  // ChatGPT: [data-message-author-role="assistant"], .agent-turn, .markdown.prose
-  // Claude: .font-claude-message, [data-is-streaming], div.prose
-  // Gemini: model-response, .message-content, .response-container-content
   if (authorRole === 'assistant') return true;
 
   const aiIndicators = [
@@ -344,7 +348,6 @@ function validateTextKeyword(text) {
             }
           });
         } else {
-          // If no explicit keyword list, match entity terms or rule words
           const entityMatch = rule.text.match(/(?:never|don't|do not)\s+mention\s+(.+?)(?:\.|$|,)/i);
           const targetTerm = entityMatch ? entityMatch[1].trim().toLowerCase() : null;
           if (targetTerm && lowerText.includes(targetTerm)) {
@@ -361,13 +364,15 @@ function validateTextKeyword(text) {
       case "length":
         const limitMatch = rule.text.match(/(\d+)\s*words?/i);
         const limit = limitMatch ? parseInt(limitMatch[1]) : 50;
-        const wordCount = text.split(/\s+/).length;
-        if (wordCount > limit) {
+        const words = text.trim().split(/\s+/);
+        if (words.length > limit) {
+          const 50thWord = words[Math.min(limit - 1, words.length - 1)];
           violations.push({
             rule: rule.text,
             type: "length",
-            wordCount: wordCount,
+            wordCount: words.length,
             limit: limit,
+            matchedText: 50thWord,
             semantic: false
           });
         }
@@ -411,7 +416,7 @@ function findMatch(text, keyword) {
   return keyword;
 }
 
-// Highlight violations in DOM (Strikethrough)
+// Highlight violations in DOM (Strikethrough & Warning Markers)
 function highlightViolations(element, violations, usedMoss) {
   violations.forEach(v => {
     if (v.matchedText) {
@@ -427,11 +432,18 @@ function highlightViolations(element, violations, usedMoss) {
             range.setEnd(node, idx + v.matchedText.length);
 
             const highlight = document.createElement('span');
-            highlight.className = 'litigo-violation' + (usedMoss ? ' litigo-semantic' : '');
-            highlight.style.cssText = 'text-decoration:line-through;background:rgba(255,107,107,0.15);color:#D64545;padding:1px 4px;border-radius:3px;';
-            const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword match';
-            highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught`;
-            highlight.textContent = range.toString();
+            if (v.type === 'length') {
+              highlight.className = 'litigo-violation litigo-warning';
+              highlight.style.cssText = 'background:rgba(255,107,107,0.2);color:#D64545;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px;';
+              highlight.title = `Litigo Enforcement: Exceeded ${v.limit} words limit`;
+              highlight.textContent = `${range.toString()} ⚠ [Word limit of ${v.limit} words exceeded]`;
+            } else {
+              highlight.className = 'litigo-violation' + (usedMoss ? ' litigo-semantic' : '');
+              highlight.style.cssText = 'text-decoration:line-through;background:rgba(255,107,107,0.15);color:#D64545;padding:1px 4px;border-radius:3px;';
+              const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword match';
+              highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught`;
+              highlight.textContent = range.toString();
+            }
 
             range.deleteContents();
             range.insertNode(highlight);

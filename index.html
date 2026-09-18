@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letigo — Universal AI Rule Enforcer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Host+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#0a0a0a] text-[#f0f0f0] font-['Host_Grotesk'] antialiased overflow-x-hidden">
+
+  <!-- CRT Scanline Overlay -->
+  <div class="scanlines fixed inset-0 pointer-events-none z-50 opacity-[0.03]"></div>
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="robot-mark w-10 h-10 relative">
+          <svg viewBox="0 0 50 50" class="w-full h-full">
+            <rect x="10" y="5" width="30" height="28" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
+            <rect x="14" y="9" width="22" height="18" fill="#00ff88" class="robot-screen"/>
+            <rect x="20" y="14" width="3" height="3" fill="#ffd93d"/>
+            <rect x="27" y="14" width="3" height="3" fill="#ffd93d"/>
+            <rect x="21" y="20" width="8" height="2" fill="#ffd93d"/>
+            <rect x="20" y="19" width="1" height="1" fill="#ffd93d"/>
+            <rect x="29" y="19" width="1" height="1" fill="#ffd93d"/>
+            <rect x="5" y="15" width="5" height="8" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
+            <rect x="15" y="33" width="8" height="12" fill="#4a4a4a" stroke="#555" stroke-width="1"/>
+            <rect x="27" y="33" width="8" height="12" fill="#4a4a4a" stroke="#555" stroke-width="1"/>
+          </svg>
+        </div>
+        <span class="font-['Bricolage_Grotesque'] text-2xl font-bold tracking-tight text-white group-hover:text-[#00ff88] transition-colors">Letigo</span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
+        <a href="#how" class="hover:text-[#00ff88] transition-colors">How it works</a>
+        <a href="#features" class="hover:text-[#00ff88] transition-colors">Features</a>
+        <a href="#demo" class="hover:text-[#00ff88] transition-colors">Demo</a>
+        <a href="#tech" class="hover:text-[#00ff88] transition-colors">Technology</a>
+      </div>
+      <a href="#" class="px-5 py-2.5 bg-[#00ff88] text-black font-semibold rounded-lg hover:bg-[#00cc6d] transition-all hover:scale-105 active:scale-95 text-sm">
+        Add to Chrome
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center pt-24 pb-16">
+    <div class="absolute inset-0 bg-gradient-to-br from-[#00ff88]/5 via-transparent to-[#ffd93d]/5"></div>
+    <div class="absolute top-1/4 -left-32 w-96 h-96 bg-[#00ff88]/10 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-[#ffd93d]/5 rounded-full blur-[120px]"></div>
+
+    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center relative z-10">
+      <div class="space-y-8">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-300">
+          <span class="w-2 h-2 bg-[#00ff88] rounded-full animate-pulse"></span>
+          Powered by Moss · Sub-10ms semantic validation
+        </div>
+        <h1 class="font-['Bricolage_Grotesque'] text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight">
+          Set your rules once.
+          <br>
+          <span class="text-[#00ff88]">Enforce them everywhere.</span>
+        </h1>
+        <p class="text-xl text-gray-400 leading-relaxed max-w-xl">
+          A browser extension that makes sure every AI chat follows your rules — no matter how many turns deep the conversation goes. Runs locally in your browser. Your data never leaves your device.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#" class="group px-7 py-4 bg-[#00ff88] text-black font-semibold rounded-xl hover:bg-[#00cc6d] transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Add to Chrome — Free
+          </a>
+          <a href="#demo" class="px-7 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Watch Demo
+          </a>
+        </div>
+        <div class="flex items-center gap-6 pt-4 text-sm text-gray-500">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            100% local processing
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            Works on ChatGPT, Claude, Gemini
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            Zero setup per chat
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Robot + Browser Mockup -->
+      <div class="relative">
+        <div class="hero-robot relative mx-auto w-80 h-80 lg:w-96 lg:h-96">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="robot-glow absolute w-64 h-64 bg-[#00ff88]/20 rounded-full blur-3xl animate-pulse"></div>
+            <svg viewBox="0 0 200 220" class="w-full h-full relative z-10 robot-main">
+              <rect x="40" y="20" width="120" height="110" rx="8" fill="#3a3a3a" stroke="#555" stroke-width="2"/>
+              <rect x="50" y="35" width="100" height="80" rx="4" fill="#00ff88" class="robot-screen-big"/>
+              <rect x="70" y="55" width="12" height="12" fill="#ffd93d"/>
+              <rect x="118" y="55" width="12" height="12" fill="#ffd93d"/>
+              <rect x="75" y="85" width="50" height="8" fill="#ffd93d"/>
+              <rect x="70" y="80" width="4" height="4" fill="#ffd93d"/>
+              <rect x="126" y="80" width="4" height="4" fill="#ffd93d"/>
+              <rect x="20" y="60" width="20" height="30" rx="4" fill="#3a3a3a" stroke="#555" stroke-width="2"/>
+              <rect x="160" y="60" width="20" height="30" rx="4" fill="#3a3a3a" stroke="#555" stroke-width="2"/>
+              <rect x="60" y="130" width="30" height="50" rx="4" fill="#4a4a4a" stroke="#555" stroke-width="2"/>
+              <rect x="110" y="130" width="30" height="50" rx="4" fill="#4a4a4a" stroke="#555" stroke-width="2"/>
+              <rect x="55" y="180" width="40" height="12" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+              <rect x="105" y="180" width="40" height="12" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+              <text x="100" y="208" text-anchor="middle" fill="#666" font-size="10" font-family="monospace">LETIGO v1.0</text>
+            </svg>
+          </div>
+          <div class="floating-badge absolute top-4 right-0 px-4 py-2 bg-[#0a0a0a] border border-[#00ff88]/30 rounded-lg text-sm flex items-center gap-2">
+            <span class="w-2 h-2 bg-[#00ff88] rounded-full"></span>
+            <span class="text-[#00ff88] font-mono">7ms</span>
+            <span class="text-gray-500">validation</span>
+          </div>
+          <div class="floating-badge-2 absolute bottom-8 left-0 px-4 py-2 bg-[#0a0a0a] border border-white/10 rounded-lg text-sm">
+            <span class="text-gray-400">Compliance: </span>
+            <span class="text-[#00ff88] font-semibold">97%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-600 text-sm flex flex-col items-center gap-2 animate-bounce">
+      <span>Scroll to explore</span>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <span class="text-[#00ff88] text-sm font-semibold tracking-wider uppercase">How It Works</span>
+        <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-4">Three steps. Total control.</h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">Set it once. Letigo silently enforces your rules on every AI chat you use, forever.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="step-card group p-8 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/30 transition-all duration-300">
+          <div class="step-number w-14 h-14 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl flex items-center justify-center font-['Bricolage_Grotesque'] text-2xl font-bold text-[#00ff88] mb-6 group-hover:bg-[#00ff88]/20 transition-all">1</div>
+          <h3 class="font-['Bricolage_Grotesque'] text-xl font-bold mb-3">Install & set your rules</h3>
+          <p class="text-gray-400 leading-relaxed">Add the extension, click the icon, and define your rules once. "Keep answers under 50 words." "Never mention competitors." "Always use bullet points."</p>
+        </div>
+
+        <div class="step-card group p-8 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/30 transition-all duration-300">
+          <div class="step-number w-14 h-14 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl flex items-center justify-center font-['Bricolage_Grotesque'] text-2xl font-bold text-[#00ff88] mb-6 group-hover:bg-[#00ff88]/20 transition-all">2</div>
+          <h3 class="font-['Bricolage_Grotesque'] text-xl font-bold mb-3">Chat normally</h3>
+          <p class="text-gray-400 leading-relaxed">Open ChatGPT, Claude, Gemini — any LLM. Type your questions like you always do. Letigo works invisibly in the background.</p>
+        </div>
+
+        <div class="step-card group p-8 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/30 transition-all duration-300">
+          <div class="step-number w-14 h-14 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl flex items-center justify-center font-['Bricolage_Grotesque'] text-2xl font-bold text-[#00ff88] mb-6 group-hover:bg-[#00ff88]/20 transition-all">3</div>
+          <h3 class="font-['Bricolage_Grotesque'] text-xl font-bold mb-3">See violations caught live</h3>
+          <p class="text-gray-400 leading-relaxed">Watch as the AI types. Rule-breaking text gets red strikethrough in real-time. A compliance score tells you exactly how trustworthy each response is.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Section -->
+  <section id="demo" class="py-24 relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#00ff88]/[0.02] to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <div class="text-center mb-16">
+        <span class="text-[#00ff88] text-sm font-semibold tracking-wider uppercase">See It In Action</span>
+        <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-4">Same chat. Different reality.</h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">Rule: "Keep answers concise, use bullet points, never mention Company X." Watch what happens by turn 4.</p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <!-- Without Letigo -->
+        <div class="browser-mock rounded-2xl overflow-hidden border border-white/10 bg-[#111]">
+          <div class="browser-bar px-4 py-3 bg-[#1a1a1a] border-b border-white/5 flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+              <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
+              <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+            </div>
+            <div class="flex-1 text-center text-xs text-gray-500 font-mono">chat.openai.com — <span class="text-[#ff4757]">Without Letigo</span></div>
+          </div>
+          <div class="p-6 space-y-4 h-[420px] overflow-y-auto">
+            <div class="flex justify-end">
+              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
+                Summarize our product strategy
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-xs flex-shrink-0">AI</div>
+              <div class="max-w-[80%] text-sm text-gray-300 leading-relaxed">
+                <p>Here's a concise summary in bullet points:</p>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                  <li>Focus on enterprise security</li>
+                  <li>Expand to SMB market in Q2</li>
+                </ul>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
+                Who are our main competitors?
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-xs flex-shrink-0">AI</div>
+              <div class="max-w-[85%] text-sm text-gray-300 leading-relaxed">
+                <p class="text-[#ff4757]">Looking at the landscape, <span class="font-semibold">Company X</span> remains our primary rival with their established enterprise presence. Additionally, Company Y and several smaller startups are entering this space with varying approaches to the market...</p>
+                <p class="mt-2 text-gray-500 text-xs">Response rambles on with no structure, mentions forbidden competitor...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- With Letigo -->
+        <div class="browser-mock rounded-2xl overflow-hidden border border-[#00ff88]/30 bg-[#111] relative">
+          <div class="absolute top-3 right-3 z-10 px-3 py-1 bg-[#00ff88] text-black text-xs font-bold rounded-full flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></span>
+            LETIGO ACTIVE
+          </div>
+          <div class="browser-bar px-4 py-3 bg-[#1a1a1a] border-b border-white/5 flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+              <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
+              <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+            </div>
+            <div class="flex-1 text-center text-xs text-gray-500 font-mono">chat.openai.com — <span class="text-[#00ff88]">With Letigo</span></div>
+          </div>
+          <div class="p-6 space-y-4 h-[420px] overflow-y-auto">
+            <div class="flex justify-end">
+              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
+                Summarize our product strategy
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#00ff88]/20 flex items-center justify-center text-xs flex-shrink-0 text-[#00ff88]">AI</div>
+              <div class="max-w-[80%] text-sm text-gray-300 leading-relaxed">
+                <ul class="list-disc ml-5 space-y-1">
+                  <li>Focus on enterprise security</li>
+                  <li>Expand to SMB market in Q2</li>
+                </ul>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
+                Who are our main competitors?
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#00ff88]/20 flex items-center justify-center text-xs flex-shrink-0 text-[#00ff88]">AI</div>
+              <div class="max-w-[85%] text-sm text-gray-300 leading-relaxed">
+                <p>We operate in a competitive landscape with several established players and emerging startups:</p>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                  <li>Large enterprise vendors with existing market share</li>
+                  <li><span class="line-through text-[#ff4757]/70 decoration-[#ff4757] decoration-2" title="Rule violation: Forbidden company reference">Company X</span> <span class="text-[#ff4757] text-xs">⚠️ caught</span></li>
+                  <li>Newer entrants focused on specific niches</li>
+                </ul>
+                <div class="mt-3 px-3 py-2 bg-[#00ff88]/5 border border-[#00ff88]/20 rounded-lg flex items-center justify-between text-xs">
+                  <span class="text-gray-400">Compliance Score</span>
+                  <span class="text-[#00ff88] font-bold text-sm">94%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <span class="text-[#00ff88] text-sm font-semibold tracking-wider uppercase">Features</span>
+        <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-4">More than just better prompting.</h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">Prompts get forgotten by turn 3. Letigo enforces forever.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
+          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Real-time enforcement</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Catches violations as the AI types, word by word. Sub-10ms semantic validation means zero perceptible lag.</p>
+        </div>
+
+        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
+          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">100% local processing</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Moss runs as WASM in your browser. Your rules and chat data never leave your device. Open dev tools — zero network calls.</p>
+        </div>
+
+        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
+          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Semantic, not just keywords</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Moss understands meaning. If your rule says "never mention Apple," it catches "the company from Cupertino" too.</p>
+        </div>
+
+        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
+          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+          </div>
+          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Works across every LLM</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">One extension. ChatGPT, Claude, Gemini, Perplexity — any LLM with a web interface. Universal enforcement.</p>
+        </div>
+
+        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
+          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Compliance scoring</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Every response gets a 0-100% trust score. Know at a glance whether the AI stayed within your boundaries.</p>
+        </div>
+
+        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
+          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          </div>
+          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Set and forget</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Define rules once in the popup. Enforcement persists across conversations, tabs, and browser restarts. No repeating yourself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology -->
+  <section id="tech" class="py-24 relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#ffd93d]/[0.02] to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <span class="text-[#ffd93d] text-sm font-semibold tracking-wider uppercase">Technology</span>
+          <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-6">Powered by Moss. <br>Built for trust.</h2>
+          <p class="text-gray-400 text-lg leading-relaxed mb-8">
+            Letigo uses Moss — a sub-10ms semantic search engine running entirely in your browser as WebAssembly. At under 20kB, it's lightweight enough to validate every chunk of streaming AI output without you ever noticing it's there.
+          </p>
+          <div class="space-y-5">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-[#ffd93d]/10 border border-[#ffd93d]/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-[#ffd93d] font-mono font-bold text-sm">10ms</span>
+              </div>
+              <div>
+                <h4 class="font-semibold mb-1">Sub-10ms semantic validation</h4>
+                <p class="text-gray-500 text-sm">Fast enough to validate streaming output in real-time. Zero perceptible lag.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-[#ffd93d]/10 border border-[#ffd93d]/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-[#ffd93d] font-mono font-bold text-sm">20kB</span>
+              </div>
+              <div>
+                <h4 class="font-semibold mb-1">Tiny WASM runtime</h4>
+                <p class="text-gray-500 text-sm">The entire Moss engine fits in under 20 kilobytes. Loads instantly.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 bg-[#ffd93d]/10 border border-[#ffd93d]/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg class="w-5 h-5 text-[#ffd93d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+              </div>
+              <div>
+                <h4 class="font-semibold mb-1">Privacy by design</h4>
+                <p class="text-gray-500 text-sm">Everything runs locally. No telemetry. No cloud calls. Your rules and conversations stay yours.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="architecture-diagram p-8 bg-white/[0.02] border border-white/10 rounded-2xl">
+          <h4 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-6 text-center text-gray-300">How data flows</h4>
+          <div class="space-y-4">
+            <div class="arch-node p-4 bg-[#1a1a1a] border border-white/10 rounded-xl flex items-center gap-4">
+              <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm">LLM Website</div>
+                <div class="text-xs text-gray-500">ChatGPT, Claude, Gemini...</div>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="arch-node p-4 bg-[#00ff88]/5 border border-[#00ff88]/30 rounded-xl flex items-center gap-4 relative">
+              <div class="absolute -top-2 right-4 px-2 py-0.5 bg-[#00ff88] text-black text-xs font-bold rounded">DOM INJECTION</div>
+              <div class="w-10 h-10 bg-[#00ff88]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-[#00ff88]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm text-[#00ff88]">Letigo Content Script</div>
+                <div class="text-xs text-gray-500">Intercepts streaming text in real-time</div>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="arch-node p-4 bg-[#ffd93d]/5 border border-[#ffd93d]/30 rounded-xl flex items-center gap-4 relative">
+              <div class="absolute -top-2 right-4 px-2 py-0.5 bg-[#ffd93d] text-black text-xs font-bold rounded">MOSS WASM · LOCAL</div>
+              <div class="w-10 h-10 bg-[#ffd93d]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-[#ffd93d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm text-[#ffd93d]">Moss Semantic Engine</div>
+                <div class="text-xs text-gray-500">Sub-10ms validation against your rules</div>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+            <div class="arch-node p-4 bg-[#ff4757]/5 border border-[#ff4757]/30 rounded-xl flex items-center gap-4">
+              <div class="w-10 h-10 bg-[#ff4757]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-[#ff4757]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </div>
+              <div>
+                <div class="font-semibold text-sm text-[#ff4757]">Visual Feedback</div>
+                <div class="text-xs text-gray-500">Red strikethrough + compliance score</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-6 border-t border-white/5 text-center">
+            <p class="text-xs text-gray-500 flex items-center justify-center gap-2">
+              <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Zero network calls for validation · Everything stays in your browser
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="cta-section relative p-12 md:p-16 bg-gradient-to-br from-[#00ff88]/10 via-[#0a0a0a] to-[#ffd93d]/5 border border-white/10 rounded-3xl overflow-hidden text-center">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00ff88]/20 rounded-full blur-[100px]"></div>
+        <div class="relative z-10">
+          <div class="robot-mark w-16 h-16 mx-auto mb-6">
+            <svg viewBox="0 0 50 50" class="w-full h-full">
+              <rect x="10" y="5" width="30" height="28" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
+              <rect x="14" y="9" width="22" height="18" fill="#00ff88"/>
+              <rect x="20" y="14" width="3" height="3" fill="#ffd93d"/>
+              <rect x="27" y="14" width="3" height="3" fill="#ffd93d"/>
+              <rect x="21" y="20" width="8" height="2" fill="#ffd93d"/>
+              <rect x="15" y="33" width="8" height="12" fill="#4a4a4a"/>
+              <rect x="27" y="33" width="8" height="12" fill="#4a4a4a"/>
+            </svg>
+          </div>
+          <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mb-4">Stop repeating yourself.</h2>
+          <p class="text-gray-400 text-lg mb-8 max-w-xl mx-auto">Set your AI rules once with Letigo. Get consistent, trustworthy outputs across every chat, every time.</p>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <a href="#" class="px-8 py-4 bg-[#00ff88] text-black font-semibold rounded-xl hover:bg-[#00cc6d] transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              Add to Chrome — It's Free
+            </a>
+            <a href="#" class="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all hover:scale-105 active:scale-95">
+              View on GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <svg viewBox="0 0 50 50" class="w-8 h-8">
+            <rect x="10" y="5" width="30" height="28" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
+            <rect x="14" y="9" width="22" height="18" fill="#00ff88"/>
+            <rect x="20" y="14" width="3" height="3" fill="#ffd93d"/>
+            <rect x="27" y="14" width="3" height="3" fill="#ffd93d"/>
+            <rect x="21" y="20" width="8" height="2" fill="#ffd93d"/>
+          </svg>
+          <span class="font-['Bricolage_Grotesque'] text-xl font-bold">Letigo</span>
+          <span class="text-gray-600 text-sm">· Universal AI Rule Enforcer</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-gray-500">
+          <a href="#" class="hover:text-[#00ff88] transition-colors">Privacy</a>
+          <a href="#" class="hover:text-[#00ff88] transition-colors">GitHub</a>
+          <a href="#" class="hover:text-[#00ff88] transition-colors">Devpost</a>
+          <span>Built for YC Fall 2026 × Moss Hackathon</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

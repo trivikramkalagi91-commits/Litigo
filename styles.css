@@ -1,0 +1,191 @@
+/* ============================================
+   Letigo — Design System & Styles
+   ============================================ */
+
+/* Base */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Host Grotesk', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bricolage Grotesk', system-ui, sans-serif;
+}
+
+/* CRT Scanline Effect */
+.scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* Robot Screen Flicker Animation */
+@keyframes screenFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+.robot-screen,
+.robot-screen-big {
+  animation: screenFlicker 4s infinite;
+}
+
+/* Robot Glow Pulse */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.1); }
+}
+
+.robot-glow {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* Floating Badges */
+@keyframes float1 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.floating-badge {
+  animation: float1 3s ease-in-out infinite;
+}
+
+.floating-badge-2 {
+  animation: float2 4s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Hero Robot Subtle Float */
+@keyframes robotFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+.hero-robot {
+  animation: robotFloat 6s ease-in-out infinite;
+}
+
+/* Step Card Hover Lift */
+.step-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0, 255, 136, 0.08);
+}
+
+/* Feature Card Hover */
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+/* Architecture Node Hover */
+.arch-node {
+  transition: all 0.3s ease;
+}
+
+.arch-node:hover {
+  transform: translateX(4px);
+}
+
+/* Browser Mock Scrollbar */
+.browser-mock ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.browser-mock ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.browser-mock ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* CTA Section */
+.cta-section {
+  position: relative;
+}
+
+/* Gradient Text Utility */
+.gradient-text {
+  background: linear-gradient(135deg, #00ff88 0%, #ffd93d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Pixel-Perfect Rendering for SVG Robot */
+.robot-main svg,
+.robot-mark svg {
+  shape-rendering: crispEdges;
+}
+
+/* Reveal on Scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Strikethrough Animation for Demo */
+@keyframes strikeIn {
+  from { text-decoration-color: transparent; }
+  to { text-decoration-color: #ff4757; }
+}
+
+/* Compliance Score Bar */
+.compliance-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #00ff88 var(--score), rgba(255,255,255,0.1) var(--score));
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-robot {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 255, 136, 0.3);
+  color: white;
+}
+
+/* Focus styles */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #00ff88;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

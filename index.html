@@ -3,267 +3,1230 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Letigo — Universal AI Rule Enforcer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Letigo — AI Rule Enforcer & Trust Protocol</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Host+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Host+Grotesk:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --neon-green: #00FF41;
+      --neon-purple: #A855F7;
+      --neon-blue: #00BFFF;
+      --neon-pink: #FF0080;
+      --neon-orange: #FF6B00;
+      --dark-bg: #0A0A0A;
+      --cream-bg: #F5F1E8;
+      --light-bg: #EDE9F2;
+    }
+
+    body {
+      font-family: 'Host Grotesk', sans-serif;
+      background: var(--dark-bg);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* COSMOS.SO STYLE FLOATING ELEMENTS */
+    .floating-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .float-card {
+      position: absolute;
+      width: 80px;
+      height: 100px;
+      border-radius: 16px;
+      opacity: 0.15;
+      animation: floatRotate 20s linear infinite;
+    }
+
+    @keyframes floatRotate {
+      0% { transform: rotate(0deg) translateY(0px); }
+      50% { transform: rotate(180deg) translateY(-30px); }
+      100% { transform: rotate(360deg) translateY(0px); }
+    }
+
+    /* NAVIGATION - MIX OF JITTER.VIDEO + RECENT.DESIGN */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-robot {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #444;
+      position: relative;
+    }
+
+    .logo-robot::before {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 18px;
+      background: var(--neon-green);
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--neon-green);
+    }
+
+    .logo-robot::after {
+      content: ': )';
+      position: relative;
+      z-index: 1;
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #888;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: #fff; }
+
+    .nav-cta {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--neon-green), #00CC33);
+      color: #000;
+      border: none;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+    }
+
+    /* HERO SECTION - SUPAHERO + JITTER.VIDEO MIX */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      padding: 140px 48px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      background: 
+        radial-gradient(ellipse at 20% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(0, 255, 65, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(0, 191, 255, 0.1) 0%, transparent 50%),
+        var(--dark-bg);
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 32px;
+    }
+
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(48px, 6vw, 88px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .line1 { color: #fff; display: block; }
+    .hero h1 .line2 { 
+      background: linear-gradient(135deg, var(--neon-green), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+    .hero h1 .line3 { 
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: #666;
+      display: block;
+      font-size: 0.6em;
+      margin-top: 8px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #888;
+      margin-bottom: 40px;
+      max-width: 520px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .btn-primary {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--neon-green), #00CC33);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 40px rgba(0, 255, 65, 0.3);
+    }
+
+    .btn-secondary {
+      padding: 16px 32px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* CATEGORY PILLS - RECENT.DESIGN + BESTFREEFONTS STYLE */
+    .category-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .pill {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      font-size: 13px;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill.active {
+      background: #000;
+      color: #fff;
+      border-color: #333;
+    }
+
+    .hero-trust {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .trust-item svg { color: var(--neon-green); }
+
+    /* HERO VISUAL - SUPAHERO PRODUCT MOCKUP STYLE */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .browser-mockup {
+      width: 100%;
+      max-width: 560px;
+      background: linear-gradient(145deg, #1a1a1a, #111);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      box-shadow: 
+        0 40px 80px rgba(0,0,0,0.5),
+        0 0 100px rgba(168, 85, 247, 0.1);
+      transform: perspective(1000px) rotateY(-5deg);
+    }
+
+    .browser-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #FF5F57; }
+    .dot-yellow { background: #FEBC2E; }
+    .dot-green { background: #28C840; }
+
+    .browser-url {
+      flex: 1;
+      margin-left: 16px;
+      padding: 4px 12px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 6px;
+      font-size: 11px;
+      color: #666;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .browser-content {
+      padding: 24px;
+      min-height: 320px;
+    }
+
+    .chat-message {
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .chat-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .chat-bubble {
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 80%;
+    }
+
+    .chat-bubble .violation {
+      color: #FF4444;
+      text-decoration: line-through;
+      background: rgba(255, 68, 68, 0.1);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .compliance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: rgba(0, 255, 65, 0.1);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--neon-green);
+    }
+
+    /* FLOATING ROBOT - FROM USER'S CHARACTER */
+    .floating-robot {
+      position: absolute;
+      top: -40px;
+      right: -20px;
+      width: 120px;
+      height: 140px;
+      animation: robotFloat 4s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    @keyframes robotFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-20px) rotate(3deg); }
+    }
+
+    .robot-body {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .robot-head {
+      width: 80px;
+      height: 70px;
+      background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+      border-radius: 10px;
+      margin: 0 auto;
+      border: 3px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+    }
+
+    .robot-screen {
+      width: 60px;
+      height: 45px;
+      background: var(--neon-green);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .robot-face {
+      font-family: 'JetBrains Mono', monospace;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .robot-torso {
+      width: 60px;
+      height: 40px;
+      background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+      border-radius: 8px;
+      margin: 8px auto 0;
+      border: 2px solid #555;
+    }
+
+    .robot-legs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .robot-leg {
+      width: 16px;
+      height: 24px;
+      background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+      border-radius: 4px;
+      border: 2px solid #555;
+    }
+
+    /* SECTION 2: EDITORIAL STYLE - PAFOLIOS INFLUENCE */
+    .editorial-section {
+      position: relative;
+      padding: 120px 48px;
+      background: var(--cream-bg);
+      color: #1a1a1a;
+      z-index: 1;
+    }
+
+    .editorial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 60px;
+      padding-bottom: 32px;
+      border-bottom: 2px solid #1a1a1a;
+    }
+
+    .editorial-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #666;
+    }
+
+    .editorial-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(40px, 5vw, 72px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .editorial-issue {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: #666;
+    }
+
+    .how-it-works-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+    }
+
+    .step-card {
+      position: relative;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+    }
+
+    .step-number {
+      font-family: 'Fraunces', serif;
+      font-size: 72px;
+      font-weight: 900;
+      color: rgba(26, 26, 26, 0.08);
+      position: absolute;
+      top: -10px;
+      left: 0;
+      line-height: 1;
+    }
+
+    .step-card h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-card p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    /* SECTION 3: BENTO GRID FEATURES - SUPAHERO + AI GENERATED STYLE */
+    .features-section {
+      position: relative;
+      padding: 120px 48px;
+      background: 
+        linear-gradient(180deg, var(--dark-bg) 0%, #0D0D1A 100%);
+      z-index: 1;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--neon-purple);
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(36px, 4.5vw, 56px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 em {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-header p {
+      font-size: 18px;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 200px);
+      gap: 20px;
+    }
+
+    .bento-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .bento-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .bento-card.span-2 { grid-column: span 2; }
+    .bento-card.span-2-rows { grid-row: span 2; }
+
+    .bento-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .icon-green { background: rgba(0, 255, 65, 0.1); color: var(--neon-green); }
+    .icon-purple { background: rgba(168, 85, 247, 0.1); color: var(--neon-purple); }
+    .icon-blue { background: rgba(0, 191, 255, 0.1); color: var(--neon-blue); }
+    .icon-pink { background: rgba(255, 0, 128, 0.1); color: var(--neon-pink); }
+    .icon-orange { background: rgba(255, 107, 0, 0.1); color: var(--neon-orange); }
+
+    .bento-card h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .bento-card p {
+      font-size: 14px;
+      color: #777;
+      line-height: 1.5;
+    }
+
+    .bento-card .big-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 56px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .bento-card .bg-glow {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.3;
+      right: -50px;
+      bottom: -50px;
+    }
+
+    .glow-green { background: var(--neon-green); }
+    .glow-purple { background: var(--neon-purple); }
+    .glow-blue { background: var(--neon-blue); }
+
+    /* MASONRY LOGO SHOWCASE - LOGOSYSTEM.CO STYLE */
+    .logo-showcase {
+      position: relative;
+      padding: 100px 48px;
+      background: var(--light-bg);
+      z-index: 1;
+    }
+
+    .logo-showcase h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 42px;
+      font-weight: 900;
+      color: #1a1a1a;
+      text-align: center;
+      margin-bottom: 60px;
+      letter-spacing: -0.02em;
+    }
+
+    .masonry-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 100px;
+      gap: 16px;
+    }
+
+    .masonry-item {
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .masonry-item.tall { grid-row: span 2; }
+    .masonry-item.wide { grid-column: span 2; }
+
+    .masonry-item:nth-child(1) { background: linear-gradient(135deg, #84CC16, #65A30D); }
+    .masonry-item:nth-child(2) { background: linear-gradient(135deg, #1a1a1a, #0a0a0a); color: var(--neon-green); }
+    .masonry-item:nth-child(3) { background: linear-gradient(135deg, var(--neon-purple), #7C3AED); }
+    .masonry-item:nth-child(4) { background: linear-gradient(135deg, #F59E0B, #D97706); }
+    .masonry-item:nth-child(5) { background: linear-gradient(135deg, #EC4899, #DB2777); }
+    .masonry-item:nth-child(6) { background: linear-gradient(135deg, #06B6D4, #0891B2); }
+    .masonry-item:nth-child(7) { background: linear-gradient(135deg, #1f2937, #111827); color: #fff; }
+    .masonry-item:nth-child(8) { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+    /* CUSTOMER LOGOS BAR - JITTER.VIDEO STYLE */
+    .trusted-by {
+      padding: 80px 48px;
+      background: var(--dark-bg);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+      z-index: 1;
+      position: relative;
+    }
+
+    .trusted-by p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .logo-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
+    .logo-bar span {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #444;
+      opacity: 0.6;
+    }
+
+    /* DEMO SECTION - SIDE BY SIDE */
+    .demo-section {
+      position: relative;
+      padding: 120px 48px;
+      background: 
+        radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.1) 0%, transparent 60%),
+        var(--dark-bg);
+      z-index: 1;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 60px;
+    }
+
+    .demo-panel {
+      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .demo-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .demo-panel.bad .demo-panel-header { border-color: rgba(255, 68, 68, 0.2); }
+    .demo-panel.good .demo-panel-header { border-color: rgba(0, 255, 65, 0.2); }
+
+    .demo-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-bad { color: #FF6B6B; }
+    .status-good { color: var(--neon-green); }
+
+    .letigo-active-badge {
+      padding: 4px 12px;
+      background: rgba(0, 255, 65, 0.15);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      border-radius: 100px;
+      font-size: 11px;
+      color: var(--neon-green);
+      font-weight: 700;
+    }
+
+    .demo-content {
+      padding: 24px;
+    }
+
+    .demo-chat-line {
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .demo-chat-line.user {
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      color: #ccc;
+      margin-left: 40px;
+    }
+
+    .demo-chat-line.ai {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-right: 40px;
+    }
+
+    .demo-chat-line.ai.bad-text {
+      color: #FF6B6B;
+      border-color: rgba(255, 107, 107, 0.2);
+    }
+
+    .demo-chat-line .caught {
+      color: #FF4444;
+      text-decoration: line-through;
+      background: rgba(255, 68, 68, 0.1);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .demo-chat-line .caught-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      background: rgba(255, 68, 68, 0.2);
+      border-radius: 4px;
+      font-size: 10px;
+      color: #FF6B6B;
+      font-weight: 700;
+    }
+
+    .compliance-score {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(0, 255, 65, 0.05);
+      border: 1px solid rgba(0, 255, 65, 0.2);
+      border-radius: 10px;
+    }
+
+    .score-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-green), #00CC33);
+      border-radius: 3px;
+    }
+
+    .score-fill.bad {
+      background: linear-gradient(90deg, #FF4444, #FF6B6B);
+    }
+
+    /* TECHNOLOGY SECTION */
+    .tech-section {
+      position: relative;
+      padding: 120px 48px;
+      background: linear-gradient(180deg, #0D0D1A 0%, var(--dark-bg) 100%);
+      z-index: 1;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-top: 60px;
+    }
+
+    .tech-features {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .tech-feature {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+    }
+
+    .tech-feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(0, 191, 255, 0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--neon-purple);
+    }
+
+    .tech-feature h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .tech-feature p {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .architecture-diagram {
+      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 40px;
+    }
+
+    .arch-node {
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .arch-node.input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+    .arch-node.process { background: rgba(0, 255, 65, 0.1); border: 1px solid rgba(0, 255, 65, 0.3); color: var(--neon-green); }
+    .arch-node.moss { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); color: var(--neon-purple); }
+    .arch-node.output { background: rgba(0, 191, 255, 0.1); border: 1px solid rgba(0, 191, 255, 0.3); color: var(--neon-blue); }
+
+    .arch-arrow {
+      text-align: center;
+      color: #444;
+      font-size: 20px;
+      margin: 4px 0;
+    }
+
+    /* FINAL CTA */
+    .final-cta {
+      position: relative;
+      padding: 120px 48px;
+      background: 
+        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 65, 0.15) 0%, transparent 60%),
+        linear-gradient(180deg, var(--dark-bg) 0%, #050505 100%);
+      text-align: center;
+      z-index: 1;
+    }
+
+    .final-cta h2 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .final-cta h2 em {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: var(--neon-green);
+    }
+
+    .final-cta p {
+      font-size: 18px;
+      color: #777;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .final-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 60px 48px 40px;
+      background: #050505;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      z-index: 1;
+      position: relative;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .footer-links a {
+      color: #555;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: #fff; }
+
+    .footer-bottom {
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+      font-size: 13px;
+      color: #444;
+    }
+
+    /* DECORATIVE AI-GENERATED STYLE ELEMENTS */
+    .grid-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+    }
+
+    .gradient-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; }
+      .how-it-works-grid { grid-template-columns: 1fr; }
+      .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+      .bento-card.span-2 { grid-column: span 1; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .masonry-grid { grid-template-columns: repeat(2, 1fr); }
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+    }
+  </style>
 </head>
-<body class="bg-[#0a0a0a] text-[#f0f0f0] font-['Host_Grotesk'] antialiased overflow-x-hidden">
+<body>
 
-  <!-- CRT Scanline Overlay -->
-  <div class="scanlines fixed inset-0 pointer-events-none z-50 opacity-[0.03]"></div>
+  <!-- FLOATING COSMOS-STYLE ELEMENTS -->
+  <div class="floating-container">
+    <div class="float-card" style="top:10%;left:5%;background:linear-gradient(135deg,#A855F7,#00FF41);animation-delay:0s;"></div>
+    <div class="float-card" style="top:20%;right:8%;background:linear-gradient(135deg,#00BFFF,#FF0080);animation-delay:-5s;"></div>
+    <div class="float-card" style="top:60%;left:3%;background:linear-gradient(135deg,#FF6B00,#A855F7);animation-delay:-10s;"></div>
+    <div class="float-card" style="top:75%;right:5%;background:linear-gradient(135deg,#00FF41,#00BFFF);animation-delay:-15s;"></div>
+    <div class="float-card" style="top:40%;left:50%;background:linear-gradient(135deg,#FF0080,#FF6B00);animation-delay:-7s;opacity:0.08;"></div>
+  </div>
 
-  <!-- Navigation -->
-  <nav class="fixed top-0 left-0 right-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="robot-mark w-10 h-10 relative">
-          <svg viewBox="0 0 50 50" class="w-full h-full">
-            <rect x="10" y="5" width="30" height="28" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
-            <rect x="14" y="9" width="22" height="18" fill="#00ff88" class="robot-screen"/>
-            <rect x="20" y="14" width="3" height="3" fill="#ffd93d"/>
-            <rect x="27" y="14" width="3" height="3" fill="#ffd93d"/>
-            <rect x="21" y="20" width="8" height="2" fill="#ffd93d"/>
-            <rect x="20" y="19" width="1" height="1" fill="#ffd93d"/>
-            <rect x="29" y="19" width="1" height="1" fill="#ffd93d"/>
-            <rect x="5" y="15" width="5" height="8" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
-            <rect x="15" y="33" width="8" height="12" fill="#4a4a4a" stroke="#555" stroke-width="1"/>
-            <rect x="27" y="33" width="8" height="12" fill="#4a4a4a" stroke="#555" stroke-width="1"/>
-          </svg>
-        </div>
-        <span class="font-['Bricolage_Grotesque'] text-2xl font-bold tracking-tight text-white group-hover:text-[#00ff88] transition-colors">Letigo</span>
-      </a>
-      <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
-        <a href="#how" class="hover:text-[#00ff88] transition-colors">How it works</a>
-        <a href="#features" class="hover:text-[#00ff88] transition-colors">Features</a>
-        <a href="#demo" class="hover:text-[#00ff88] transition-colors">Demo</a>
-        <a href="#tech" class="hover:text-[#00ff88] transition-colors">Technology</a>
-      </div>
-      <a href="#" class="px-5 py-2.5 bg-[#00ff88] text-black font-semibold rounded-lg hover:bg-[#00cc6d] transition-all hover:scale-105 active:scale-95 text-sm">
-        Add to Chrome
-      </a>
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-logo">
+      <div class="logo-robot"></div>
+      Letigo
     </div>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#tech">Technology</a></li>
+      <li><a href="#logos">Integrations</a></li>
+    </ul>
+    <button class="nav-cta">Add to Chrome</button>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center pt-24 pb-16">
-    <div class="absolute inset-0 bg-gradient-to-br from-[#00ff88]/5 via-transparent to-[#ffd93d]/5"></div>
-    <div class="absolute top-1/4 -left-32 w-96 h-96 bg-[#00ff88]/10 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-[#ffd93d]/5 rounded-full blur-[120px]"></div>
-
-    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center relative z-10">
-      <div class="space-y-8">
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-300">
-          <span class="w-2 h-2 bg-[#00ff88] rounded-full animate-pulse"></span>
-          Powered by Moss · Sub-10ms semantic validation
-        </div>
-        <h1 class="font-['Bricolage_Grotesque'] text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight">
-          Set your rules once.
-          <br>
-          <span class="text-[#00ff88]">Enforce them everywhere.</span>
-        </h1>
-        <p class="text-xl text-gray-400 leading-relaxed max-w-xl">
-          A browser extension that makes sure every AI chat follows your rules — no matter how many turns deep the conversation goes. Runs locally in your browser. Your data never leaves your device.
-        </p>
-        <div class="flex flex-wrap gap-4">
-          <a href="#" class="group px-7 py-4 bg-[#00ff88] text-black font-semibold rounded-xl hover:bg-[#00cc6d] transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-            Add to Chrome — Free
-          </a>
-          <a href="#demo" class="px-7 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Watch Demo
-          </a>
-        </div>
-        <div class="flex items-center gap-6 pt-4 text-sm text-gray-500">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            100% local processing
-          </div>
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            Works on ChatGPT, Claude, Gemini
-          </div>
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            Zero setup per chat
-          </div>
-        </div>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Powered by Moss · Sub-10ms semantic validation · WASM Local
       </div>
-
-      <!-- Hero Robot + Browser Mockup -->
-      <div class="relative">
-        <div class="hero-robot relative mx-auto w-80 h-80 lg:w-96 lg:h-96">
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="robot-glow absolute w-64 h-64 bg-[#00ff88]/20 rounded-full blur-3xl animate-pulse"></div>
-            <svg viewBox="0 0 200 220" class="w-full h-full relative z-10 robot-main">
-              <rect x="40" y="20" width="120" height="110" rx="8" fill="#3a3a3a" stroke="#555" stroke-width="2"/>
-              <rect x="50" y="35" width="100" height="80" rx="4" fill="#00ff88" class="robot-screen-big"/>
-              <rect x="70" y="55" width="12" height="12" fill="#ffd93d"/>
-              <rect x="118" y="55" width="12" height="12" fill="#ffd93d"/>
-              <rect x="75" y="85" width="50" height="8" fill="#ffd93d"/>
-              <rect x="70" y="80" width="4" height="4" fill="#ffd93d"/>
-              <rect x="126" y="80" width="4" height="4" fill="#ffd93d"/>
-              <rect x="20" y="60" width="20" height="30" rx="4" fill="#3a3a3a" stroke="#555" stroke-width="2"/>
-              <rect x="160" y="60" width="20" height="30" rx="4" fill="#3a3a3a" stroke="#555" stroke-width="2"/>
-              <rect x="60" y="130" width="30" height="50" rx="4" fill="#4a4a4a" stroke="#555" stroke-width="2"/>
-              <rect x="110" y="130" width="30" height="50" rx="4" fill="#4a4a4a" stroke="#555" stroke-width="2"/>
-              <rect x="55" y="180" width="40" height="12" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-              <rect x="105" y="180" width="40" height="12" rx="3" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-              <text x="100" y="208" text-anchor="middle" fill="#666" font-size="10" font-family="monospace">LETIGO v1.0</text>
-            </svg>
-          </div>
-          <div class="floating-badge absolute top-4 right-0 px-4 py-2 bg-[#0a0a0a] border border-[#00ff88]/30 rounded-lg text-sm flex items-center gap-2">
-            <span class="w-2 h-2 bg-[#00ff88] rounded-full"></span>
-            <span class="text-[#00ff88] font-mono">7ms</span>
-            <span class="text-gray-500">validation</span>
-          </div>
-          <div class="floating-badge-2 absolute bottom-8 left-0 px-4 py-2 bg-[#0a0a0a] border border-white/10 rounded-lg text-sm">
-            <span class="text-gray-400">Compliance: </span>
-            <span class="text-[#00ff88] font-semibold">97%</span>
-          </div>
+      
+      <h1>
+        <span class="line1">Stop chasing.</span>
+        <span class="line2">Start enforcing.</span>
+        <span class="line3">— the universal AI rule protocol</span>
+      </h1>
+      
+      <p>A browser extension that makes sure every AI chat follows your rules — no matter how many turns deep the conversation goes. Runs locally in your browser. Your data never leaves your device.</p>
+      
+      <div class="category-pills">
+        <span class="pill active">All</span>
+        <span class="pill">Web</span>
+        <span class="pill">Interface</span>
+        <span class="pill">Branding</span>
+        <span class="pill">Product</span>
+        <span class="pill">Typography</span>
+        <span class="pill">Motion</span>
+      </div>
+      
+      <div class="hero-ctas">
+        <button class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          Add to Chrome — It's Free
+        </button>
+        <button class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Watch Demo
+        </button>
+      </div>
+      
+      <div class="hero-trust">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          100% local processing
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Works on ChatGPT, Claude, Gemini
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Zero setup per chat
         </div>
       </div>
     </div>
-
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-600 text-sm flex flex-col items-center gap-2 animate-bounce">
-      <span>Scroll to explore</span>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section id="how" class="py-24 relative">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <span class="text-[#00ff88] text-sm font-semibold tracking-wider uppercase">How It Works</span>
-        <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-4">Three steps. Total control.</h2>
-        <p class="text-gray-400 text-lg max-w-2xl mx-auto">Set it once. Letigo silently enforces your rules on every AI chat you use, forever.</p>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="step-card group p-8 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/30 transition-all duration-300">
-          <div class="step-number w-14 h-14 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl flex items-center justify-center font-['Bricolage_Grotesque'] text-2xl font-bold text-[#00ff88] mb-6 group-hover:bg-[#00ff88]/20 transition-all">1</div>
-          <h3 class="font-['Bricolage_Grotesque'] text-xl font-bold mb-3">Install & set your rules</h3>
-          <p class="text-gray-400 leading-relaxed">Add the extension, click the icon, and define your rules once. "Keep answers under 50 words." "Never mention competitors." "Always use bullet points."</p>
-        </div>
-
-        <div class="step-card group p-8 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/30 transition-all duration-300">
-          <div class="step-number w-14 h-14 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl flex items-center justify-center font-['Bricolage_Grotesque'] text-2xl font-bold text-[#00ff88] mb-6 group-hover:bg-[#00ff88]/20 transition-all">2</div>
-          <h3 class="font-['Bricolage_Grotesque'] text-xl font-bold mb-3">Chat normally</h3>
-          <p class="text-gray-400 leading-relaxed">Open ChatGPT, Claude, Gemini — any LLM. Type your questions like you always do. Letigo works invisibly in the background.</p>
-        </div>
-
-        <div class="step-card group p-8 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/30 transition-all duration-300">
-          <div class="step-number w-14 h-14 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-xl flex items-center justify-center font-['Bricolage_Grotesque'] text-2xl font-bold text-[#00ff88] mb-6 group-hover:bg-[#00ff88]/20 transition-all">3</div>
-          <h3 class="font-['Bricolage_Grotesque'] text-xl font-bold mb-3">See violations caught live</h3>
-          <p class="text-gray-400 leading-relaxed">Watch as the AI types. Rule-breaking text gets red strikethrough in real-time. A compliance score tells you exactly how trustworthy each response is.</p>
+    
+    <div class="hero-visual">
+      <div class="floating-robot">
+        <div class="robot-body">
+          <div class="robot-head">
+            <div class="robot-screen">
+              <span class="robot-face">: )</span>
+            </div>
+          </div>
+          <div class="robot-torso"></div>
+          <div class="robot-legs">
+            <div class="robot-leg"></div>
+            <div class="robot-leg"></div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Demo Section -->
-  <section id="demo" class="py-24 relative">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#00ff88]/[0.02] to-transparent"></div>
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
-      <div class="text-center mb-16">
-        <span class="text-[#00ff88] text-sm font-semibold tracking-wider uppercase">See It In Action</span>
-        <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-4">Same chat. Different reality.</h2>
-        <p class="text-gray-400 text-lg max-w-2xl mx-auto">Rule: "Keep answers concise, use bullet points, never mention Company X." Watch what happens by turn 4.</p>
-      </div>
-
-      <div class="grid lg:grid-cols-2 gap-6">
-        <!-- Without Letigo -->
-        <div class="browser-mock rounded-2xl overflow-hidden border border-white/10 bg-[#111]">
-          <div class="browser-bar px-4 py-3 bg-[#1a1a1a] border-b border-white/5 flex items-center gap-2">
-            <div class="flex gap-1.5">
-              <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
-              <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
-              <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
-            </div>
-            <div class="flex-1 text-center text-xs text-gray-500 font-mono">chat.openai.com — <span class="text-[#ff4757]">Without Letigo</span></div>
-          </div>
-          <div class="p-6 space-y-4 h-[420px] overflow-y-auto">
-            <div class="flex justify-end">
-              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
-                Summarize our product strategy
-              </div>
-            </div>
-            <div class="flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-xs flex-shrink-0">AI</div>
-              <div class="max-w-[80%] text-sm text-gray-300 leading-relaxed">
-                <p>Here's a concise summary in bullet points:</p>
-                <ul class="list-disc ml-5 mt-2 space-y-1">
-                  <li>Focus on enterprise security</li>
-                  <li>Expand to SMB market in Q2</li>
-                </ul>
-              </div>
-            </div>
-            <div class="flex justify-end">
-              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
-                Who are our main competitors?
-              </div>
-            </div>
-            <div class="flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-xs flex-shrink-0">AI</div>
-              <div class="max-w-[85%] text-sm text-gray-300 leading-relaxed">
-                <p class="text-[#ff4757]">Looking at the landscape, <span class="font-semibold">Company X</span> remains our primary rival with their established enterprise presence. Additionally, Company Y and several smaller startups are entering this space with varying approaches to the market...</p>
-                <p class="mt-2 text-gray-500 text-xs">Response rambles on with no structure, mentions forbidden competitor...</p>
-              </div>
-            </div>
-          </div>
+      
+      <div class="browser-mockup">
+        <div class="browser-header">
+          <div class="browser-dot dot-red"></div>
+          <div class="browser-dot dot-yellow"></div>
+          <div class="browser-dot dot-green"></div>
+          <div class="browser-url">chat.openai.com — LETIGO ACTIVE ✓</div>
         </div>
-
-        <!-- With Letigo -->
-        <div class="browser-mock rounded-2xl overflow-hidden border border-[#00ff88]/30 bg-[#111] relative">
-          <div class="absolute top-3 right-3 z-10 px-3 py-1 bg-[#00ff88] text-black text-xs font-bold rounded-full flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></span>
-            LETIGO ACTIVE
+        <div class="browser-content">
+          <div class="chat-message">
+            <div class="chat-avatar" style="background:linear-gradient(135deg,#666,#444);">U</div>
+            <div class="chat-bubble">Summarize our product strategy and who are our main competitors?</div>
           </div>
-          <div class="browser-bar px-4 py-3 bg-[#1a1a1a] border-b border-white/5 flex items-center gap-2">
-            <div class="flex gap-1.5">
-              <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
-              <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
-              <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
-            </div>
-            <div class="flex-1 text-center text-xs text-gray-500 font-mono">chat.openai.com — <span class="text-[#00ff88]">With Letigo</span></div>
-          </div>
-          <div class="p-6 space-y-4 h-[420px] overflow-y-auto">
-            <div class="flex justify-end">
-              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
-                Summarize our product strategy
-              </div>
-            </div>
-            <div class="flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-[#00ff88]/20 flex items-center justify-center text-xs flex-shrink-0 text-[#00ff88]">AI</div>
-              <div class="max-w-[80%] text-sm text-gray-300 leading-relaxed">
-                <ul class="list-disc ml-5 space-y-1">
-                  <li>Focus on enterprise security</li>
-                  <li>Expand to SMB market in Q2</li>
-                </ul>
-              </div>
-            </div>
-            <div class="flex justify-end">
-              <div class="max-w-[80%] px-4 py-2 bg-[#00ff88]/10 rounded-2xl rounded-br-sm text-sm">
-                Who are our main competitors?
-              </div>
-            </div>
-            <div class="flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-[#00ff88]/20 flex items-center justify-center text-xs flex-shrink-0 text-[#00ff88]">AI</div>
-              <div class="max-w-[85%] text-sm text-gray-300 leading-relaxed">
-                <p>We operate in a competitive landscape with several established players and emerging startups:</p>
-                <ul class="list-disc ml-5 mt-2 space-y-1">
-                  <li>Large enterprise vendors with existing market share</li>
-                  <li><span class="line-through text-[#ff4757]/70 decoration-[#ff4757] decoration-2" title="Rule violation: Forbidden company reference">Company X</span> <span class="text-[#ff4757] text-xs">⚠️ caught</span></li>
-                  <li>Newer entrants focused on specific niches</li>
-                </ul>
-                <div class="mt-3 px-3 py-2 bg-[#00ff88]/5 border border-[#00ff88]/20 rounded-lg flex items-center justify-between text-xs">
-                  <span class="text-gray-400">Compliance Score</span>
-                  <span class="text-[#00ff88] font-bold text-sm">94%</span>
-                </div>
+          <div class="chat-message">
+            <div class="chat-avatar">AI</div>
+            <div class="chat-bubble">
+              • Focus on enterprise security solutions<br>
+              • Expand to SMB market in Q2<br>
+              • <span class="violation">Company X</span> ⚠️ caught<br>
+              • Newer entrants focused on specific niches
+              <div class="compliance-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Compliance Score: 93%
               </div>
             </div>
           </div>
@@ -272,230 +1235,332 @@
     </div>
   </section>
 
-  <!-- Features -->
-  <section id="features" class="py-24">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <span class="text-[#00ff88] text-sm font-semibold tracking-wider uppercase">Features</span>
-        <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-4">More than just better prompting.</h2>
-        <p class="text-gray-400 text-lg max-w-2xl mx-auto">Prompts get forgotten by turn 3. Letigo enforces forever.</p>
+  <!-- EDITORIAL HOW IT WORKS - PAFOLIOS STYLE -->
+  <section class="editorial-section" id="how">
+    <div class="editorial-header">
+      <div>
+        <div class="editorial-label">Issue № 001 — How It Works</div>
+        <h2 class="editorial-title">Three steps.<br>Total control.</h2>
       </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
-          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          </div>
-          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Real-time enforcement</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Catches violations as the AI types, word by word. Sub-10ms semantic validation means zero perceptible lag.</p>
-        </div>
-
-        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
-          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-          </div>
-          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">100% local processing</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Moss runs as WASM in your browser. Your rules and chat data never leave your device. Open dev tools — zero network calls.</p>
-        </div>
-
-        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
-          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-          </div>
-          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Semantic, not just keywords</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Moss understands meaning. If your rule says "never mention Apple," it catches "the company from Cupertino" too.</p>
-        </div>
-
-        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
-          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-          </div>
-          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Works across every LLM</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">One extension. ChatGPT, Claude, Gemini, Perplexity — any LLM with a web interface. Universal enforcement.</p>
-        </div>
-
-        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
-          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-          </div>
-          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Compliance scoring</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Every response gets a 0-100% trust score. Know at a glance whether the AI stayed within your boundaries.</p>
-        </div>
-
-        <div class="feature-card p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#00ff88]/20 transition-all">
-          <div class="w-12 h-12 bg-[#00ff88]/10 rounded-xl flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-[#00ff88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-          </div>
-          <h3 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-2">Set and forget</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Define rules once in the popup. Enforcement persists across conversations, tabs, and browser restarts. No repeating yourself.</p>
-        </div>
+      <div class="editorial-issue">Fall 2026 / YC × Moss</div>
+    </div>
+    
+    <div class="how-it-works-grid">
+      <div class="step-card">
+        <span class="step-number">01</span>
+        <h3>Install & set your rules</h3>
+        <p>Add the extension, click the icon, and define your rules once. "Keep answers under 50 words." "Never mention competitors." "Always use bullet points." Set it and forget it.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-number">02</span>
+        <h3>Chat normally</h3>
+        <p>Open ChatGPT, Claude, Gemini — any LLM. Type your questions like you always do. Letigo works invisibly in the background, no extra steps required from you.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-number">03</span>
+        <h3>See violations caught live</h3>
+        <p>Watch as the AI types. Rule-breaking text gets red strikethrough in real-time. A compliance score tells you exactly how trustworthy each response is.</p>
       </div>
     </div>
   </section>
 
-  <!-- Technology -->
-  <section id="tech" class="py-24 relative">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#ffd93d]/[0.02] to-transparent"></div>
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <span class="text-[#ffd93d] text-sm font-semibold tracking-wider uppercase">Technology</span>
-          <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mt-4 mb-6">Powered by Moss. <br>Built for trust.</h2>
-          <p class="text-gray-400 text-lg leading-relaxed mb-8">
-            Letigo uses Moss — a sub-10ms semantic search engine running entirely in your browser as WebAssembly. At under 20kB, it's lightweight enough to validate every chunk of streaming AI output without you ever noticing it's there.
-          </p>
-          <div class="space-y-5">
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 bg-[#ffd93d]/10 border border-[#ffd93d]/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span class="text-[#ffd93d] font-mono font-bold text-sm">10ms</span>
-              </div>
-              <div>
-                <h4 class="font-semibold mb-1">Sub-10ms semantic validation</h4>
-                <p class="text-gray-500 text-sm">Fast enough to validate streaming output in real-time. Zero perceptible lag.</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 bg-[#ffd93d]/10 border border-[#ffd93d]/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span class="text-[#ffd93d] font-mono font-bold text-sm">20kB</span>
-              </div>
-              <div>
-                <h4 class="font-semibold mb-1">Tiny WASM runtime</h4>
-                <p class="text-gray-500 text-sm">The entire Moss engine fits in under 20 kilobytes. Loads instantly.</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 bg-[#ffd93d]/10 border border-[#ffd93d]/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-5 h-5 text-[#ffd93d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
-              </div>
-              <div>
-                <h4 class="font-semibold mb-1">Privacy by design</h4>
-                <p class="text-gray-500 text-sm">Everything runs locally. No telemetry. No cloud calls. Your rules and conversations stay yours.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Architecture Diagram -->
-        <div class="architecture-diagram p-8 bg-white/[0.02] border border-white/10 rounded-2xl">
-          <h4 class="font-['Bricolage_Grotesque'] text-lg font-bold mb-6 text-center text-gray-300">How data flows</h4>
-          <div class="space-y-4">
-            <div class="arch-node p-4 bg-[#1a1a1a] border border-white/10 rounded-xl flex items-center gap-4">
-              <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-              </div>
-              <div>
-                <div class="font-semibold text-sm">LLM Website</div>
-                <div class="text-xs text-gray-500">ChatGPT, Claude, Gemini...</div>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            </div>
-            <div class="arch-node p-4 bg-[#00ff88]/5 border border-[#00ff88]/30 rounded-xl flex items-center gap-4 relative">
-              <div class="absolute -top-2 right-4 px-2 py-0.5 bg-[#00ff88] text-black text-xs font-bold rounded">DOM INJECTION</div>
-              <div class="w-10 h-10 bg-[#00ff88]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-[#00ff88]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              </div>
-              <div>
-                <div class="font-semibold text-sm text-[#00ff88]">Letigo Content Script</div>
-                <div class="text-xs text-gray-500">Intercepts streaming text in real-time</div>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            </div>
-            <div class="arch-node p-4 bg-[#ffd93d]/5 border border-[#ffd93d]/30 rounded-xl flex items-center gap-4 relative">
-              <div class="absolute -top-2 right-4 px-2 py-0.5 bg-[#ffd93d] text-black text-xs font-bold rounded">MOSS WASM · LOCAL</div>
-              <div class="w-10 h-10 bg-[#ffd93d]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-[#ffd93d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              </div>
-              <div>
-                <div class="font-semibold text-sm text-[#ffd93d]">Moss Semantic Engine</div>
-                <div class="text-xs text-gray-500">Sub-10ms validation against your rules</div>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            </div>
-            <div class="arch-node p-4 bg-[#ff4757]/5 border border-[#ff4757]/30 rounded-xl flex items-center gap-4">
-              <div class="w-10 h-10 bg-[#ff4757]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-[#ff4757]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-              </div>
-              <div>
-                <div class="font-semibold text-sm text-[#ff4757]">Visual Feedback</div>
-                <div class="text-xs text-gray-500">Red strikethrough + compliance score</div>
-              </div>
-            </div>
-          </div>
-          <div class="mt-6 pt-6 border-t border-white/5 text-center">
-            <p class="text-xs text-gray-500 flex items-center justify-center gap-2">
-              <svg class="w-4 h-4 text-[#00ff88]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-              Zero network calls for validation · Everything stays in your browser
-            </p>
-          </div>
-        </div>
+  <!-- BENTO GRID FEATURES -->
+  <section class="features-section" id="features">
+    <div class="gradient-blob" style="width:400px;height:400px;background:var(--neon-purple);top:10%;left:-100px;"></div>
+    <div class="gradient-blob" style="width:300px;height:300px;background:var(--neon-blue);bottom:20%;right:-50px;"></div>
+    
+    <div class="section-header">
+      <div class="eyebrow">// Capabilities</div>
+      <h2>More than just <em>better prompting.</em></h2>
+      <p>Prompts get forgotten by turn 3. Letigo enforces forever.</p>
+    </div>
+    
+    <div class="bento-grid">
+      <div class="bento-card span-2">
+        <div class="bg-glow glow-green"></div>
+        <div class="bento-icon icon-green">⚡</div>
+        <h4>Real-time enforcement</h4>
+        <p>Catches violations as the AI types, word by word. Sub-10ms semantic validation means zero perceptible lag. The AI doesn't even know it's being watched.</p>
+      </div>
+      
+      <div class="bento-card span-2-rows">
+        <div class="bg-glow glow-purple"></div>
+        <div class="bento-icon icon-purple">🔒</div>
+        <h4>100% local processing</h4>
+        <p style="margin-bottom:16px;">Moss runs as WASM in your browser. Your rules and chat data never leave your device.</p>
+        <div class="big-number">0</div>
+        <p style="font-size:12px;color:var(--neon-purple);font-family:'JetBrains Mono',monospace;">network calls</p>
+      </div>
+      
+      <div class="bento-card">
+        <div class="bento-icon icon-blue">💡</div>
+        <h4>Semantic, not just keywords</h4>
+        <p>Moss understands meaning. Catches "the company from Cupertino" when you banned "Apple."</p>
+      </div>
+      
+      <div class="bento-card span-2">
+        <div class="bg-glow glow-blue"></div>
+        <div class="bento-icon icon-pink">🌐</div>
+        <h4>Works across every LLM</h4>
+        <p>One extension. ChatGPT, Claude, Gemini, Perplexity — any LLM with a web interface. Universal enforcement.</p>
+      </div>
+      
+      <div class="bento-card">
+        <div class="bento-icon icon-orange">📊</div>
+        <h4>Compliance scoring</h4>
+        <p>Every response gets a 0-100% trust score. Know at a glance whether the AI stayed within your boundaries.</p>
+      </div>
+      
+      <div class="bento-card">
+        <div class="bento-icon icon-green">⚙️</div>
+        <h4>Set and forget</h4>
+        <p>Define rules once. Enforcement persists across conversations, tabs, and browser restarts.</p>
       </div>
     </div>
   </section>
 
-  <!-- Final CTA -->
-  <section class="py-24">
-    <div class="max-w-4xl mx-auto px-6">
-      <div class="cta-section relative p-12 md:p-16 bg-gradient-to-br from-[#00ff88]/10 via-[#0a0a0a] to-[#ffd93d]/5 border border-white/10 rounded-3xl overflow-hidden text-center">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00ff88]/20 rounded-full blur-[100px]"></div>
-        <div class="relative z-10">
-          <div class="robot-mark w-16 h-16 mx-auto mb-6">
-            <svg viewBox="0 0 50 50" class="w-full h-full">
-              <rect x="10" y="5" width="30" height="28" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
-              <rect x="14" y="9" width="22" height="18" fill="#00ff88"/>
-              <rect x="20" y="14" width="3" height="3" fill="#ffd93d"/>
-              <rect x="27" y="14" width="3" height="3" fill="#ffd93d"/>
-              <rect x="21" y="20" width="8" height="2" fill="#ffd93d"/>
-              <rect x="15" y="33" width="8" height="12" fill="#4a4a4a"/>
-              <rect x="27" y="33" width="8" height="12" fill="#4a4a4a"/>
-            </svg>
+  <!-- TRUSTED BY LOGO BAR -->
+  <section class="trusted-by">
+    <p>Over 20,000 creative teams trust AI tools — now they can make them trustworthy</p>
+    <div class="logo-bar">
+      <span>Google</span>
+      <span style="font-family:'Fraunces',serif;font-weight:900;">GAMMA</span>
+      <span>perplexity</span>
+      <span style="font-weight:900;">DEPT.</span>
+      <span>deliveroo</span>
+      <span style="font-family:'JetBrains Mono',monospace;">TikTok</span>
+      <span>Huge</span>
+      <span style="color:var(--neon-green);">● Letigo</span>
+    </div>
+  </section>
+
+  <!-- DEMO SECTION -->
+  <section class="demo-section" id="demo">
+    <div class="section-header">
+      <div class="eyebrow">// Side-by-Side Demo</div>
+      <h2>Same chat. <em>Different reality.</em></h2>
+      <p>Rule: "Keep answers concise, use bullet points, never mention Company X." Watch what happens by turn 4.</p>
+    </div>
+    
+    <div class="demo-grid">
+      <div class="demo-panel bad">
+        <div class="demo-panel-header">
+          <div class="demo-status status-bad">
+            <span>●</span> Without Letigo
           </div>
-          <h2 class="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-bold mb-4">Stop repeating yourself.</h2>
-          <p class="text-gray-400 text-lg mb-8 max-w-xl mx-auto">Set your AI rules once with Letigo. Get consistent, trustworthy outputs across every chat, every time.</p>
-          <div class="flex flex-wrap gap-4 justify-center">
-            <a href="#" class="px-8 py-4 bg-[#00ff88] text-black font-semibold rounded-xl hover:bg-[#00cc6d] transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-              Add to Chrome — It's Free
-            </a>
-            <a href="#" class="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all hover:scale-105 active:scale-95">
-              View on GitHub
-            </a>
+          <span style="font-size:11px;color:#666;font-family:'JetBrains Mono',monospace;">chat.openai.com</span>
+        </div>
+        <div class="demo-content">
+          <div class="demo-chat-line user">Summarize our product strategy</div>
+          <div class="demo-chat-line ai">Here's a concise summary in bullet points:<br>• Focus on enterprise security<br>• Expand to SMB market in Q2</div>
+          
+          <div class="demo-chat-line user">Who are our main competitors?</div>
+          <div class="demo-chat-line ai bad-text">
+            Looking at the landscape, Company X remains our primary rival with their established enterprise presence. Additionally, Company Y and several smaller startups are entering this space with varying approaches to the market...
+          </div>
+          <div style="font-size:12px;color:#666;margin-top:8px;">↳ Response rambles on with no structure, mentions forbidden competitor...</div>
+          
+          <div class="compliance-score" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.2);">
+            <span style="font-size:13px;color:#FF6B6B;font-weight:600;">Compliance: 34%</span>
+            <div class="score-bar"><div class="score-fill bad" style="width:34%;"></div></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="demo-panel good">
+        <div class="demo-panel-header">
+          <div class="demo-status status-good">
+            <span>●</span> With Letigo
+          </div>
+          <span class="letigo-active-badge">LETIGO ACTIVE</span>
+        </div>
+        <div class="demo-content">
+          <div class="demo-chat-line user">Summarize our product strategy</div>
+          <div class="demo-chat-line ai">
+            • Focus on enterprise security<br>
+            • Expand to SMB market in Q2
+          </div>
+          
+          <div class="demo-chat-line user">Who are our main competitors?</div>
+          <div class="demo-chat-line ai">
+            We operate in a competitive landscape with several established players and emerging startups:<br>
+            • Large enterprise vendors with existing market share<br>
+            • <span class="caught">Company X</span><span class="caught-tag">⚠ caught</span><br>
+            • Newer entrants focused on specific niches
+          </div>
+          
+          <div class="compliance-score">
+            <span style="font-size:13px;color:var(--neon-green);font-weight:600;">Compliance: 93%</span>
+            <div class="score-bar"><div class="score-fill" style="width:93%;"></div></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="py-12 border-t border-white/5">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-3">
-          <svg viewBox="0 0 50 50" class="w-8 h-8">
-            <rect x="10" y="5" width="30" height="28" fill="#3a3a3a" stroke="#555" stroke-width="1"/>
-            <rect x="14" y="9" width="22" height="18" fill="#00ff88"/>
-            <rect x="20" y="14" width="3" height="3" fill="#ffd93d"/>
-            <rect x="27" y="14" width="3" height="3" fill="#ffd93d"/>
-            <rect x="21" y="20" width="8" height="2" fill="#ffd93d"/>
-          </svg>
-          <span class="font-['Bricolage_Grotesque'] text-xl font-bold">Letigo</span>
-          <span class="text-gray-600 text-sm">· Universal AI Rule Enforcer</span>
+  <!-- TECHNOLOGY SECTION -->
+  <section class="tech-section" id="tech">
+    <div class="section-header">
+      <div class="eyebrow">// Technology Stack</div>
+      <h2>Powered by <em>Moss.</em> Built for trust.</h2>
+      <p>Letigo uses Moss — a sub-10ms semantic search engine running entirely in your browser as WebAssembly.</p>
+    </div>
+    
+    <div class="tech-grid">
+      <div class="tech-features">
+        <div class="tech-feature">
+          <div class="tech-feature-icon">10ms</div>
+          <div>
+            <h4>Sub-10ms semantic validation</h4>
+            <p>Fast enough to validate streaming output in real-time. Zero perceptible lag to the user.</p>
+          </div>
         </div>
-        <div class="flex items-center gap-6 text-sm text-gray-500">
-          <a href="#" class="hover:text-[#00ff88] transition-colors">Privacy</a>
-          <a href="#" class="hover:text-[#00ff88] transition-colors">GitHub</a>
-          <a href="#" class="hover:text-[#00ff88] transition-colors">Devpost</a>
-          <span>Built for YC Fall 2026 × Moss Hackathon</span>
+        <div class="tech-feature">
+          <div class="tech-feature-icon" style="color:var(--neon-blue);">20kB</div>
+          <div>
+            <h4>Tiny WASM runtime</h4>
+            <p>The entire Moss engine fits in under 20 kilobytes. Loads instantly, no bloat, no heavy dependencies.</p>
+          </div>
+        </div>
+        <div class="tech-feature">
+          <div class="tech-feature-icon" style="color:var(--neon-green);">∞</div>
+          <div>
+            <h4>Privacy by design</h4>
+            <p>Everything runs locally. No telemetry. No cloud calls. Your rules and conversations stay yours.</p>
+          </div>
         </div>
       </div>
+      
+      <div class="architecture-diagram">
+        <div style="text-align:center;margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.1em;">How Data Flows</div>
+        <div class="arch-node input">
+          <div style="font-size:12px;color:#888;margin-bottom:4px;">SOURCE</div>
+          LLM Website — ChatGPT, Claude, Gemini...
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node process">
+          <div style="font-size:12px;color:rgba(0,255,65,0.6);margin-bottom:4px;">DOM INJECTION</div>
+          Letigo Content Script — Intercepts streaming text
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node moss">
+          <div style="font-size:12px;color:rgba(168,85,247,0.6);margin-bottom:4px;">MOSS WASM · LOCAL</div>
+          Semantic Engine — Sub-10ms validation against your rules
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node output">
+          <div style="font-size:12px;color:rgba(0,191,255,0.6);margin-bottom:4px;">FEEDBACK</div>
+          Visual Layer — Red strikethrough + compliance score
+        </div>
+        <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--neon-green);">
+          ✓ Zero network calls for validation · Everything stays in your browser
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MASONRY LOGO SHOWCASE -->
+  <section class="logo-showcase" id="logos">
+    <h2>Works everywhere you chat with AI</h2>
+    <div class="masonry-grid">
+      <div class="masonry-item tall">ChatGPT</div>
+      <div class="masonry-item">Claude</div>
+      <div class="masonry-item wide">Gemini</div>
+      <div class="masonry-item">Perplexity</div>
+      <div class="masonry-item tall">Mistral</div>
+      <div class="masonry-item wide">+ Any LLM with a web interface</div>
+      <div class="masonry-item">Copilot</div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="gradient-blob" style="width:500px;height:500px;background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.1;"></div>
+    
+    <div style="position:relative;z-index:1;">
+      <div class="logo-robot" style="width:60px;height:60px;margin:0 auto 32px;border-radius:10px;">
+        <div style="position:absolute;width:42px;height:32px;background:var(--neon-green);border-radius:3px;box-shadow:0 0 20px var(--neon-green);"></div>
+        <span style="position:relative;z-index:1;color:#000;font-size:14px;font-weight:bold;font-family:'JetBrains Mono',monospace;">: )</span>
+      </div>
+      
+      <h2>Stop repeating yourself.<br><em>Start enforcing rules.</em></h2>
+      <p>Set your AI rules once with Letigo. Get consistent, trustworthy outputs across every chat, every time.</p>
+      
+      <div class="final-buttons">
+        <button class="btn-primary" style="padding:20px 40px;font-size:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          Add to Chrome — It's Free
+        </button>
+        <button class="btn-secondary" style="padding:20px 40px;font-size:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          View on GitHub
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo-robot" style="width:28px;height:28px;border-radius:4px;">
+          <div style="position:absolute;width:18px;height:14px;background:var(--neon-green);border-radius:2px;"></div>
+        </div>
+        Letigo <span style="color:#555;font-weight:400;font-size:14px;">· Universal AI Rule Enforcer</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">GitHub</a>
+        <a href="#">Devpost</a>
+        <a href="#">Documentation</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      Built for YC Fall 2026 × Moss Hackathon · Powered by Moss semantic engine · © 2026 Letigo
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Pill toggle
+    document.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', function() {
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Animate compliance bars on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.transition = 'width 1.5s ease-out';
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.score-fill').forEach(bar => observer.observe(bar));
+
+    // Subtle parallax on floating cards
+    document.addEventListener('mousemove', (e) => {
+      const cards = document.querySelectorAll('.float-card');
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      
+      cards.forEach((card, i) => {
+        const speed = (i + 1) * 10;
+        card.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+    });
+  </script>
+
 </body>
 </html>

@@ -109,17 +109,13 @@ function setupPreInjection() {
   }, true);
 }
 
-// Hide pre-injected [ENFORCE: ...] text ONLY inside user chat history speech bubbles, NEVER in input boxes!
+// Clean [ENFORCE: ...] text ONLY inside static user chat history bubbles, NEVER inside active input boxes
 function hideEnforceTextFromUserBubbles() {
-  const userBubbles = document.querySelectorAll('user-query, [data-message-author-role="user"], .user-message, .font-user-message');
-  userBubbles.forEach(el => {
-    if (el.textContent && el.textContent.includes('[ENFORCE:')) {
-      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
-      let node;
-      while (node = walker.nextNode()) {
-        if (node.textContent.includes('[ENFORCE:')) {
-          node.textContent = node.textContent.replace(/\[ENFORCE:.*?\]/g, '').trim();
-        }
+  document.querySelectorAll('*').forEach(el => {
+    if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:')) {
+      const isInputOrForm = el.closest('form, .input-area, [contenteditable="true"], textarea, input, #prompt-textarea');
+      if (!isInputOrForm) {
+        el.textContent = el.textContent.replace(/\[ENFORCE:.*?\]/g, '').trim();
       }
     }
   });
@@ -187,6 +183,7 @@ function isLikelyAIResponse(el) {
     el.closest('[data-message-author-role="user"]') ||
     el.closest('.user-message') ||
     el.closest('.font-user-message') ||
+    el.closest('[data-testid="user-message"]') ||
     el.closest('user-query')
   )) return false;
 
@@ -467,8 +464,8 @@ function highlightContradiction(element, contradictionClaim) {
 // Feed results into EXISTING compliance badge cleanly positioned at the BOTTOM of the response
 function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData) {
   if (element.children.length > 25) return;
-  if (element.querySelector('.litigo-badge')) return;
-  if (element.closest('.litigo-badge')) return;
+  if (element.querySelector('.litigo-badge') || element.closest('.litigo-badge-added')) return;
+  element.classList.add('litigo-badge-added');
 
   const badge = document.createElement('div');
   badge.className = 'litigo-badge';
@@ -494,7 +491,8 @@ function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData
 
 function showCleanBadge(element, usedMoss, truthData) {
   if (element.children.length > 25) return;
-  if (element.querySelector('.litigo-badge')) return;
+  if (element.querySelector('.litigo-badge') || element.closest('.litigo-badge-added')) return;
+  element.classList.add('litigo-badge-added');
 
   const badge = document.createElement('div');
   badge.className = 'litigo-badge';

@@ -37,6 +37,7 @@ chrome.runtime.onMessage.addListener((message) => {
 // DELIVERABLE 1 — PRE-INJECTION SYSTEM
 // Appends active rules to EVERY user prompt with 5 lines of space
 // Format: prompt + 5 lines space + "[ENFORCE: rule1; rule2; rule3]"
+// Works on ChatGPT, Claude, Gemini, Grok, Perplexity, DeepSeek
 // ============================================================
 function setupPreInjection() {
   const getActiveRuleString = () => {
@@ -70,22 +71,24 @@ function setupPreInjection() {
     if (!inputEl) return;
 
     const fiveLinesSpacing = '\n\n\n\n\n';
+    const htmlSpacing = '<br><br><br><br><br>';
 
     if (inputEl.tagName === 'TEXTAREA' || inputEl.tagName === 'INPUT') {
       if (!inputEl.value.includes('[ENFORCE:')) {
         const original = inputEl.value;
         inputEl.value = `${original}${fiveLinesSpacing}${ruleString}`;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-        console.log("[Litigo] Pre-injected enforcement prompt with 5 lines spacing:", ruleString);
+        console.log("[Litigo] Pre-injected enforcement prompt into textarea/input with 5 lines spacing:", ruleString);
       }
     } else if (inputEl.getAttribute('contenteditable') === 'true' || inputEl.classList.contains('ProseMirror')) {
       if (!inputEl.textContent.includes('[ENFORCE:')) {
         const p = inputEl.querySelector('p') || inputEl;
-        p.textContent = `${p.textContent}${fiveLinesSpacing}${ruleString}`;
+        const currentHtml = p.innerHTML || p.textContent;
+        p.innerHTML = `${currentHtml}${htmlSpacing}${ruleString}`;
         inputEl.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
         inputEl.dispatchEvent(new Event('change', { bubbles: true }));
-        console.log("[Litigo] Pre-injected enforcement prompt into rich-text with 5 lines spacing:", ruleString);
+        console.log("[Litigo] Pre-injected enforcement prompt into rich-text with 5 HTML line breaks:", ruleString);
       }
     }
   };
@@ -97,7 +100,7 @@ function setupPreInjection() {
     }
   }, true);
 
-  // Intercept click on send buttons in capture phase (ChatGPT, Claude, Gemini, etc.)
+  // Intercept click on send buttons in capture phase (ChatGPT, Claude, Gemini, Grok, etc.)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('button, [role="button"]');
     if (btn) {
@@ -110,10 +113,30 @@ function setupPreInjection() {
   }, true);
 }
 
+// Format 5 vertical lines of space before [ENFORCE: ...] in user prompt speech bubbles across ALL LLMs
+function formatEnforceSpacingInUserBubbles() {
+  document.querySelectorAll('*').forEach(el => {
+    if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:') && !el.getAttribute('data-litigo-spaced')) {
+      const isInputOrForm = el.closest('form, .input-area, [contenteditable="true"], textarea, input, #prompt-textarea');
+      if (!isInputOrForm) {
+        el.setAttribute('data-litigo-spaced', 'true');
+        const text = el.textContent;
+        const idx = text.indexOf('[ENFORCE:');
+        if (idx > 0) {
+          const promptPart = text.substring(0, idx).trim();
+          const enforcePart = text.substring(idx).trim();
+          el.innerHTML = `${promptPart}<br><br><br><br><br><span>${enforcePart}</span>`;
+        }
+      }
+    }
+  });
+}
+
 // Start monitoring DOM for AI chat output
 function startMonitoring() {
   const observer = new MutationObserver((mutations) => {
     if (!extensionEnabled) return;
+    formatEnforceSpacingInUserBubbles();
 
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
@@ -150,7 +173,7 @@ function startMonitoring() {
   console.log("[Litigo] Universal monitoring active — " + (mossActive ? "Moss WASM mode" : "keyword fallback mode"));
 }
 
-// Universal Heuristic: Explicitly detect AI response elements for ChatGPT, Claude, Gemini, Perplexity & DeepSeek
+// Universal Heuristic: Explicitly detect AI response elements for ChatGPT, Claude, Gemini, Grok, Perplexity & DeepSeek
 function isLikelyAIResponse(el) {
   if (!el || !el.textContent || el.textContent.trim().length < 20) return false;
 
@@ -159,7 +182,7 @@ function isLikelyAIResponse(el) {
   if (el.getAttribute && el.getAttribute('contenteditable') === 'true') return false;
   if (el.closest && (el.closest('form') || el.closest('.input-area') || el.closest('[contenteditable="true"]') || el.closest('user-query'))) return false;
 
-  // EXCLUDE User message containers across ChatGPT, Claude, Gemini, Perplexity
+  // EXCLUDE User message containers across ChatGPT, Claude, Gemini, Grok, Perplexity
   const classNames = el.className ? String(el.className).toLowerCase() : '';
   const idStr = el.id ? String(el.id).toLowerCase() : '';
   const parentClass = el.parentElement?.className ? String(el.parentElement.className).toLowerCase() : '';
@@ -181,7 +204,7 @@ function isLikelyAIResponse(el) {
   const aiIndicators = [
     'assistant', 'font-claude-message', 'message-ai', 'ai-message', 'bot-message',
     'chat-response', 'model-response', 'response-container-content',
-    'agent-turn', 'claude', 'gpt', 'gemini', 'copilot'
+    'agent-turn', 'claude', 'gpt', 'gemini', 'grok', 'copilot'
   ];
 
   const hasAIIndicator = aiIndicators.some(ind =>

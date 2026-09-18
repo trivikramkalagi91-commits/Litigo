@@ -3,20 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Letigo — Your space for AI rules and trustworthy outputs</title>
+  <title>Letigo — Your space for AI rules, trustworthy outputs, and peace of mind</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       CRAFT.DO DESIGN SYSTEM — ADAPTED FOR LETIGO
-       ============================================ */
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --cream: #FDF8F0;
-      --cream-dark: #F5EFE3;
       --sky-light: #C7E4F5;
       --sky-medium: #A8D4EC;
       --sky-deep: #7CB8DE;
@@ -24,11 +19,8 @@
       --ink-soft: #333;
       --muted: #666;
       --soft-blue: #B4C7EF;
-      --soft-blue-deep: #8DA8E0;
       --soft-peach: #FFE8D6;
       --soft-green: #C8E6C9;
-      --soft-purple: #D1C4E9;
-      --soft-yellow: #FFF59D;
       --white: #FFFFFF;
     }
 
@@ -57,16 +49,6 @@
     a { text-decoration: none; color: inherit; }
     button { cursor: pointer; border: none; font-family: inherit; }
 
-    /* Paper texture overlay */
-    .paper-texture {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.4;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-    }
-
     /* ============================================
        FLOATING PILL NAVIGATION
        ============================================ */
@@ -78,9 +60,9 @@
       z-index: 100;
       display: flex;
       align-items: center;
-      gap: 32px;
+      gap: 28px;
       padding: 10px 14px 10px 20px;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 100px;
@@ -92,7 +74,7 @@
       font-family: 'Inter', sans-serif;
       font-weight: 900;
       font-size: 22px;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
       color: var(--ink);
       display: flex;
       align-items: center;
@@ -102,13 +84,6 @@
       display: inline-block;
       transform: skewX(-8deg);
     }
-
-    .nav-logo .letter-l { position: relative; }
-    .nav-logo .letter-e { transform: skewX(-8deg) translateY(1px); }
-    .nav-logo .letter-t { transform: skewX(-8deg); }
-    .nav-logo .letter-i { transform: skewX(-8deg) translateY(-1px); }
-    .nav-logo .letter-g { transform: skewX(-8deg) translateY(1px); }
-    .nav-logo .letter-o { transform: skewX(-8deg); }
 
     .nav-links {
       display: flex;
@@ -142,13 +117,10 @@
       transition: all 0.2s;
     }
 
-    .nav-cta:hover {
-      background: #000;
-      transform: translateY(-1px);
-    }
+    .nav-cta:hover { background: #000; transform: translateY(-1px); }
 
     /* ============================================
-       HERO SECTION — Sky blue + paper illustrations
+       HERO SECTION
        ============================================ */
     .hero {
       position: relative;
@@ -164,61 +136,41 @@
     .hero-sky {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, var(--sky-medium) 0%, var(--sky-light) 40%, var(--cream) 100%);
+      background: linear-gradient(180deg, var(--sky-medium) 0%, var(--sky-light) 45%, var(--cream) 100%);
       z-index: 0;
+      border-radius: 0 0 24px 24px;
+      margin: 0 12px;
     }
 
-    /* Paper-cut clouds */
+    /* Paper clouds */
     .cloud {
       position: absolute;
       background: var(--white);
       border-radius: 50%;
       filter: drop-shadow(0 2px 8px rgba(0,0,0,0.04));
     }
-
-    .cloud::before,
-    .cloud::after {
+    .cloud::before, .cloud::after {
       content: '';
       position: absolute;
       background: var(--white);
       border-radius: 50%;
     }
+    .cloud-1 { width: 130px; height: 52px; top: 16%; left: 6%; }
+    .cloud-1::before { width: 65px; height: 65px; top: -28px; left: 18px; }
+    .cloud-1::after { width: 52px; height: 52px; top: -20px; left: 60px; }
+    .cloud-2 { width: 170px; height: 62px; top: 20%; right: 8%; }
+    .cloud-2::before { width: 85px; height: 85px; top: -38px; left: 22px; }
+    .cloud-2::after { width: 68px; height: 68px; top: -26px; left: 80px; }
+    .cloud-3 { width: 95px; height: 40px; top: 30%; left: 22%; opacity: 0.85; }
+    .cloud-3::before { width: 48px; height: 48px; top: -20px; left: 12px; }
+    .cloud-3::after { width: 40px; height: 40px; top: -14px; left: 42px; }
 
-    .cloud-1 {
-      width: 120px;
-      height: 50px;
-      top: 18%;
-      left: 8%;
-    }
-    .cloud-1::before { width: 60px; height: 60px; top: -25px; left: 15px; }
-    .cloud-1::after { width: 50px; height: 50px; top: -18px; left: 55px; }
-
-    .cloud-2 {
-      width: 160px;
-      height: 60px;
-      top: 22%;
-      right: 10%;
-    }
-    .cloud-2::before { width: 80px; height: 80px; top: -35px; left: 20px; }
-    .cloud-2::after { width: 65px; height: 65px; top: -25px; left: 75px; }
-
-    .cloud-3 {
-      width: 90px;
-      height: 38px;
-      top: 32%;
-      left: 25%;
-      opacity: 0.8;
-    }
-    .cloud-3::before { width: 45px; height: 45px; top: -18px; left: 10px; }
-    .cloud-3::after { width: 38px; height: 38px; top: -12px; left: 40px; }
-
-    /* Halftone dots on clouds */
     .halftone {
       position: absolute;
       width: 100%;
       height: 100%;
-      background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
-      background-size: 6px 6px;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 5px 5px;
       border-radius: 50%;
       opacity: 0.5;
     }
@@ -227,49 +179,30 @@
     .mountains {
       position: absolute;
       bottom: 0;
-      left: 0;
-      right: 0;
-      height: 200px;
+      left: 12px;
+      right: 12px;
+      height: 220px;
       z-index: 1;
     }
-
     .mountain {
       position: absolute;
       bottom: 0;
-      border-radius: 40% 60% 0 0 / 100% 100% 0 0;
+      border-radius: 45% 55% 0 0 / 100% 100% 0 0;
     }
-
-    .mountain-1 {
-      width: 45%;
-      height: 140px;
-      left: -5%;
-      background: #B8C5E8;
-    }
-
-    .mountain-2 {
-      width: 35%;
-      height: 100px;
-      left: 25%;
-      background: #D4C5A8;
-    }
-
-    .mountain-3 {
-      width: 50%;
-      height: 160px;
-      right: -10%;
-      background: #F5DEB3;
-    }
+    .mountain-1 { width: 48%; height: 150px; left: -6%; background: #B8C5E8; }
+    .mountain-2 { width: 38%; height: 110px; left: 24%; background: #D4C5A8; }
+    .mountain-3 { width: 52%; height: 170px; right: -8%; background: #F5DEB3; }
 
     .hero-content {
       position: relative;
       z-index: 2;
       max-width: 720px;
-      margin-bottom: 60px;
+      margin-bottom: 56px;
     }
 
     .hero h1 {
-      font-size: clamp(40px, 5.5vw, 68px);
-      line-height: 1.15;
+      font-size: clamp(42px, 5.5vw, 70px);
+      line-height: 1.18;
       margin-bottom: 32px;
       color: var(--ink);
     }
@@ -277,7 +210,7 @@
     .hero-btn {
       display: inline-block;
       padding: 14px 32px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       color: var(--ink);
       font-size: 15px;
       font-weight: 600;
@@ -285,25 +218,20 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       transition: all 0.2s;
     }
-
-    .hero-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
+    .hero-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
 
     /* Hero product mockup */
     .hero-mockup {
       position: relative;
       z-index: 2;
       width: 100%;
-      max-width: 900px;
+      max-width: 880px;
       background: var(--white);
       border-radius: 20px;
       box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
       overflow: hidden;
       border: 1px solid rgba(0, 0, 0, 0.06);
     }
-
     .mockup-bar {
       padding: 14px 20px;
       background: #f5f5f5;
@@ -312,13 +240,11 @@
       align-items: center;
       gap: 10px;
     }
-
     .mockup-dots { display: flex; gap: 6px; }
     .mdot { width: 10px; height: 10px; border-radius: 50%; }
     .mdot.red { background: #FF5F57; }
     .mdot.yellow { background: #FEBC2E; }
     .mdot.green { background: #28C840; }
-
     .mockup-url {
       flex: 1;
       margin-left: 16px;
@@ -329,7 +255,6 @@
       color: #888;
       text-align: center;
     }
-
     .mockup-body {
       padding: 28px;
       display: grid;
@@ -337,7 +262,6 @@
       gap: 24px;
       background: #FAFAF8;
     }
-
     .chat-panel {
       background: white;
       border-radius: 14px;
@@ -345,7 +269,6 @@
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
       border: 1px solid rgba(0, 0, 0, 0.04);
     }
-
     .chat-panel-label {
       font-size: 11px;
       font-weight: 600;
@@ -356,10 +279,8 @@
       align-items: center;
       gap: 6px;
     }
-
     .chat-panel-label.bad { color: #D64545; }
     .chat-panel-label.good { color: #2E7D32; }
-
     .chat-msg {
       margin-bottom: 12px;
       padding: 10px 14px;
@@ -367,31 +288,15 @@
       font-size: 13px;
       line-height: 1.5;
     }
-
-    .chat-msg.user {
-      background: #F0F4FF;
-      color: #444;
-      margin-left: 20px;
-    }
-
-    .chat-msg.ai {
-      background: #F8F8F5;
-      color: #333;
-      margin-right: 20px;
-    }
-
-    .chat-msg.ai.bad-text {
-      color: #D64545;
-      background: #FFF5F5;
-    }
-
+    .chat-msg.user { background: #F0F4FF; color: #444; margin-left: 20px; }
+    .chat-msg.ai { background: #F8F8F5; color: #333; margin-right: 20px; }
+    .chat-msg.ai.bad-text { color: #D64545; background: #FFF5F5; }
     .violation {
       text-decoration: line-through;
       background: rgba(214, 69, 69, 0.08);
       padding: 1px 3px;
       border-radius: 3px;
     }
-
     .caught-badge {
       display: inline-block;
       margin-left: 4px;
@@ -402,7 +307,6 @@
       color: #D64545;
       font-weight: 600;
     }
-
     .mini-score {
       margin-top: 10px;
       padding: 8px 12px;
@@ -413,34 +317,17 @@
       align-items: center;
       gap: 10px;
     }
-
     .mini-score.bad { background: #FFF5F5; color: #D64545; }
     .mini-score.good { background: #E8F5E9; color: #2E7D32; }
-
-    .mini-bar {
-      flex: 1;
-      height: 4px;
-      background: rgba(0,0,0,0.06);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .mini-fill {
-      height: 100%;
-      border-radius: 2px;
-    }
-
+    .mini-bar { flex: 1; height: 4px; background: rgba(0,0,0,0.06); border-radius: 2px; overflow: hidden; }
+    .mini-fill { height: 100%; border-radius: 2px; transition: width 1.5s ease-out; }
     .mini-fill.bad { width: 34%; background: #D64545; }
     .mini-fill.good { width: 93%; background: #4CAF50; }
 
     /* ============================================
        SECTION COMMON
        ============================================ */
-    section {
-      position: relative;
-      z-index: 2;
-    }
-
+    section { position: relative; z-index: 2; }
     .section-title {
       text-align: center;
       font-size: clamp(32px, 4vw, 48px);
@@ -449,21 +336,10 @@
       color: var(--ink);
     }
 
-    .section-subtitle {
-      text-align: center;
-      font-size: 17px;
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto;
-    }
-
     /* ============================================
-       CAPABILITIES SECTION — Hand-drawn icons
+       CAPABILITIES
        ============================================ */
-    .capabilities {
-      padding: 100px 48px;
-    }
-
+    .capabilities { padding: 100px 48px; }
     .cap-icons {
       display: flex;
       justify-content: center;
@@ -471,12 +347,7 @@
       margin-top: 56px;
       flex-wrap: wrap;
     }
-
-    .cap-item {
-      text-align: center;
-      max-width: 140px;
-    }
-
+    .cap-item { text-align: center; max-width: 140px; }
     .cap-icon {
       width: 56px;
       height: 56px;
@@ -485,7 +356,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .cap-icon svg {
       width: 100%;
       height: 100%;
@@ -495,33 +365,25 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-
     .cap-item h4 {
       font-family: 'Inter', sans-serif;
       font-size: 14px;
       font-weight: 600;
       margin-bottom: 4px;
     }
-
-    .cap-item p {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
+    .cap-item p { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
     /* ============================================
-       FEATURE BLOCKS — Soft blue cards
+       FEATURE BLOCKS
        ============================================ */
     .feature-block {
-      padding: 80px 48px;
+      padding: 60px 48px;
       max-width: 1100px;
       margin: 0 auto;
     }
-
     .feature-card {
-      background: var(--soft-blue);
       border-radius: 24px;
-      padding: 48px;
+      padding: 56px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 48px;
@@ -529,11 +391,9 @@
       position: relative;
       overflow: hidden;
     }
-
+    .feature-card.blue { background: var(--soft-blue); }
     .feature-card.peach { background: var(--soft-peach); }
     .feature-card.green { background: var(--soft-green); }
-    .feature-card.purple { background: var(--soft-purple); }
-
     .feature-label {
       font-size: 12px;
       font-weight: 600;
@@ -542,13 +402,11 @@
       color: var(--ink-soft);
       margin-bottom: 16px;
     }
-
     .feature-card h3 {
       font-size: clamp(28px, 3.5vw, 40px);
       line-height: 1.2;
       margin-bottom: 16px;
     }
-
     .feature-card p {
       font-size: 15px;
       color: var(--ink-soft);
@@ -556,11 +414,10 @@
       margin-bottom: 24px;
       max-width: 380px;
     }
-
     .feature-btn {
       display: inline-block;
       padding: 10px 24px;
-      background: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.75);
       color: var(--ink);
       font-size: 14px;
       font-weight: 600;
@@ -568,19 +425,13 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       transition: all 0.2s;
     }
-
-    .feature-btn:hover {
-      background: rgba(255, 255, 255, 0.9);
-      transform: translateY(-1px);
-    }
-
+    .feature-btn:hover { background: rgba(255, 255, 255, 0.95); transform: translateY(-1px); }
     .feature-sub-items {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin-top: 28px;
     }
-
     .sub-item {
       display: flex;
       align-items: center;
@@ -588,40 +439,26 @@
       font-size: 14px;
       font-weight: 500;
     }
-
     .sub-item svg {
-      width: 24px;
-      height: 24px;
-      stroke: var(--ink);
-      stroke-width: 1.5;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      width: 24px; height: 24px;
+      stroke: var(--ink); stroke-width: 1.5; fill: none;
+      stroke-linecap: round; stroke-linejoin: round;
       flex-shrink: 0;
     }
-
-    .feature-visual {
-      position: relative;
-    }
-
+    .feature-visual { position: relative; }
     .visual-window {
       background: white;
       border-radius: 14px;
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
       overflow: hidden;
     }
-
-    .visual-window.small {
-      max-width: 320px;
-    }
-
+    .visual-window.small { max-width: 320px; }
     .visual-window.offset {
       position: absolute;
       top: 40px;
       left: -30px;
       max-width: 280px;
     }
-
     .visual-header {
       padding: 10px 14px;
       background: #f0f0f0;
@@ -629,7 +466,6 @@
       align-items: center;
       gap: 8px;
     }
-
     .visual-tab {
       padding: 4px 12px;
       background: white;
@@ -637,17 +473,12 @@
       font-size: 11px;
       color: #666;
     }
-
     .visual-tab.active {
       background: #e8e8e8;
       color: var(--ink);
       font-weight: 500;
     }
-
-    .visual-content {
-      padding: 20px;
-    }
-
+    .visual-content { padding: 20px; }
     .rule-item {
       display: flex;
       align-items: center;
@@ -658,68 +489,53 @@
       margin-bottom: 8px;
       font-size: 13px;
     }
-
     .rule-item .toggle {
-      width: 32px;
-      height: 18px;
+      width: 32px; height: 18px;
       background: var(--soft-green);
       border-radius: 100px;
       position: relative;
       margin-left: auto;
     }
-
     .rule-item .toggle::after {
       content: '';
       position: absolute;
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       background: white;
       border-radius: 50%;
-      top: 2px;
-      right: 2px;
+      top: 2px; right: 2px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
-
     .compliance-ring {
-      width: 120px;
-      height: 120px;
+      width: 120px; height: 120px;
       margin: 0 auto 16px;
       position: relative;
     }
-
     .ring-bg {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       border-radius: 50%;
       border: 8px solid rgba(0,0,0,0.06);
     }
-
     .ring-fill {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       border-radius: 50%;
       border: 8px solid transparent;
       border-top-color: #4CAF50;
       border-right-color: #4CAF50;
       transform: rotate(45deg);
     }
-
     .ring-text {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
     }
-
     .ring-num {
       font-family: 'Playfair Display', serif;
       font-size: 32px;
       font-weight: 600;
       line-height: 1;
     }
-
     .ring-label {
       font-size: 10px;
       color: var(--muted);
@@ -728,89 +544,13 @@
     }
 
     /* ============================================
-       HOW PEOPLE USE — Testimonial cards
+       DOWNLOAD / CTA SECTION
        ============================================ */
-    .use-cases {
-      padding: 80px 0 100px;
-    }
-
-    .use-cases .section-title {
-      margin-bottom: 56px;
-    }
-
-    .testimonial-track {
-      display: flex;
-      gap: 24px;
-      overflow-x: auto;
-      padding: 0 48px 24px;
-      scrollbar-width: none;
-    }
-
-    .testimonial-track::-webkit-scrollbar { display: none; }
-
-    .testimonial-card {
-      flex-shrink: 0;
-      width: 220px;
-      text-align: center;
-    }
-
-    .testimonial-portrait {
-      width: 180px;
-      height: 220px;
-      border-radius: 20px;
-      margin: 0 auto 20px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    }
-
-    .portrait-bg {
-      position: absolute;
-      inset: 0;
-    }
-
-    .portrait-bg.green { background: linear-gradient(135deg, #81C784 0%, #4CAF50 100%); }
-    .portrait-bg.orange { background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%); }
-    .portrait-bg.blue { background: linear-gradient(135deg, #64B5F6 0%, #1976D2 100%); }
-    .portrait-bg.purple { background: linear-gradient(135deg, #BA68C8 0%, #7B1FA2 100%); }
-    .portrait-bg.gray { background: linear-gradient(135deg, #E0E0E0 0%, #9E9E9E 100%); }
-
-    /* Torn paper edge effect */
-    .torn-edge {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 40px;
-      background: var(--cream);
-      clip-path: polygon(0% 100%, 5% 60%, 10% 80%, 15% 50%, 20% 70%, 25% 40%, 30% 65%, 35% 45%, 40% 75%, 45% 55%, 50% 80%, 55% 50%, 60% 70%, 65% 45%, 70% 65%, 75% 55%, 80% 75%, 85% 50%, 90% 70%, 95% 60%, 100% 100%);
-    }
-
-    .testimonial-name {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 8px;
-    }
-
-    .testimonial-desc {
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: 15px;
-      color: var(--ink-soft);
-      line-height: 1.5;
-    }
-
-    /* ============================================
-       FINAL CTA
-       ============================================ */
-    .final-cta {
+    .download-section {
       padding: 100px 48px;
       text-align: center;
       position: relative;
     }
-
     .cta-logo-mark {
       font-family: 'Inter', sans-serif;
       font-weight: 900;
@@ -819,32 +559,28 @@
       margin-bottom: 24px;
       display: inline-block;
     }
-
     .cta-logo-mark span {
       display: inline-block;
       transform: skewX(-8deg);
     }
-
-    .final-cta h2 {
+    .download-section h2 {
       font-size: clamp(36px, 4.5vw, 56px);
       line-height: 1.15;
       margin-bottom: 20px;
     }
-
-    .final-cta p {
+    .download-section p {
       font-size: 17px;
       color: var(--muted);
       max-width: 480px;
       margin: 0 auto 36px;
     }
-
     .cta-buttons {
       display: flex;
       gap: 14px;
       justify-content: center;
       flex-wrap: wrap;
+      margin-bottom: 48px;
     }
-
     .cta-primary {
       padding: 14px 32px;
       background: var(--ink);
@@ -854,12 +590,7 @@
       border-radius: 100px;
       transition: all 0.2s;
     }
-
-    .cta-primary:hover {
-      background: #000;
-      transform: translateY(-2px);
-    }
-
+    .cta-primary:hover { background: #000; transform: translateY(-2px); }
     .cta-secondary {
       padding: 14px 32px;
       background: transparent;
@@ -870,9 +601,51 @@
       border: 1px solid rgba(0, 0, 0, 0.15);
       transition: all 0.2s;
     }
+    .cta-secondary:hover { background: rgba(0, 0, 0, 0.04); }
 
-    .cta-secondary:hover {
-      background: rgba(0, 0, 0, 0.04);
+    .install-steps {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+      background: white;
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    }
+    .install-steps h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .step-row:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--soft-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+      color: var(--ink-soft);
+    }
+    .step-text { font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+    .step-text code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: monospace;
     }
 
     /* ============================================
@@ -885,7 +658,6 @@
       position: relative;
       z-index: 2;
     }
-
     .footer-content {
       display: flex;
       justify-content: center;
@@ -893,78 +665,50 @@
       margin-bottom: 24px;
       flex-wrap: wrap;
     }
-
     .footer-content a {
       font-size: 14px;
       color: var(--muted);
       transition: color 0.2s;
     }
-
     .footer-content a:hover { color: var(--ink); }
+    .footer-bottom { font-size: 13px; color: #999; }
 
-    .footer-bottom {
-      font-size: 13px;
-      color: #999;
-    }
-
-    /* ============================================
-       RESPONSIVE
-       ============================================ */
     @media (max-width: 1024px) {
-      nav {
-        gap: 16px;
-        padding: 8px 12px 8px 16px;
-        top: 12px;
-      }
-      .nav-links { display: none; }
-      .nav-divider { display: none; }
-      
+      nav { gap: 16px; padding: 8px 12px 8px 16px; top: 12px; }
+      .nav-links, .nav-divider { display: none; }
       .hero { padding: 120px 24px 60px; }
-      .capabilities, .feature-block, .final-cta { padding-left: 24px; padding-right: 24px; }
-      
-      .feature-card {
-        grid-template-columns: 1fr;
-        padding: 32px;
-        gap: 32px;
-      }
-      
+      .hero-sky { margin: 0 6px; }
+      .capabilities, .feature-block, .download-section, footer { padding-left: 24px; padding-right: 24px; }
+      .feature-card { grid-template-columns: 1fr; padding: 32px; gap: 32px; }
       .visual-window.offset { position: relative; top: 0; left: 0; margin-top: -40px; }
-      
       .mockup-body { grid-template-columns: 1fr; }
-      
       .cap-icons { gap: 32px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="paper-texture"></div>
-
   <!-- Floating Pill Navigation -->
   <nav>
     <div class="nav-logo">
-      <span class="letter-l">L</span><span class="letter-e">E</span><span class="letter-t">T</span><span class="letter-i">I</span><span class="letter-g">G</span><span class="letter-o">O</span>
+      <span>L</span><span>E</span><span>T</span><span>I</span><span>G</span><span>O</span>
     </div>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#how">How it works</a></li>
-      <li><a href="#demo">Demo</a></li>
       <li><a href="#technology">Technology</a></li>
+      <li><a href="#download">Download</a></li>
     </ul>
     <div class="nav-divider"></div>
-    <a href="#" class="nav-cta">Try Letigo Free</a>
+    <a href="#download" class="nav-cta">Try Letigo Free</a>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
     <div class="hero-sky"></div>
-    
-    <!-- Clouds -->
     <div class="cloud cloud-1"><div class="halftone"></div></div>
     <div class="cloud cloud-2"><div class="halftone"></div></div>
     <div class="cloud cloud-3"><div class="halftone"></div></div>
-    
-    <!-- Mountains -->
     <div class="mountains">
       <div class="mountain mountain-1"></div>
       <div class="mountain mountain-2"></div>
@@ -973,10 +717,9 @@
 
     <div class="hero-content">
       <h1>Your space for <em>AI rules</em>,<br>trustworthy outputs, and<br>peace of mind.</h1>
-      <a href="#" class="hero-btn">Try Letigo Free</a>
+      <a href="#download" class="hero-btn">Try Letigo Free</a>
     </div>
 
-    <!-- Product Mockup -->
     <div class="hero-mockup">
       <div class="mockup-bar">
         <div class="mockup-dots">
@@ -1021,7 +764,6 @@
   <!-- CAPABILITIES -->
   <section class="capabilities" id="features">
     <h2 class="section-title">Letigo isn't just for one thing,<br>it's for <em>your things.</em></h2>
-    
     <div class="cap-icons">
       <div class="cap-item">
         <div class="cap-icon">
@@ -1063,12 +805,12 @@
 
   <!-- FEATURE 1: Set Rules -->
   <section class="feature-block" id="how">
-    <div class="feature-card">
+    <div class="feature-card blue">
       <div>
         <div class="feature-label">Set & Forget</div>
         <h3>From first thought to <em>final rule.</em></h3>
         <p>In Letigo, your rules move with you — define them once in the popup, and get consistent enforcement across every chat, every tab, every time. No more repeating yourself in every new conversation.</p>
-        <a href="#" class="feature-btn">Learn more</a>
+        <a href="#download" class="feature-btn">Learn more</a>
         <div class="feature-sub-items">
           <div class="sub-item">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h10M7 8h10M7 16h6"/></svg>
@@ -1124,7 +866,7 @@
         <div class="feature-label">Trust & Verify</div>
         <h3>Know at a glance<br><em>what's reliable.</em></h3>
         <p>Every AI response gets a compliance score. A quick glance tells you whether the AI stayed within your boundaries. Green means good — investigate anything less.</p>
-        <a href="#" class="feature-btn">Learn more</a>
+        <a href="#download" class="feature-btn">Learn more</a>
       </div>
       <div class="feature-visual" style="direction: ltr;">
         <div class="visual-window small" style="margin-left: auto; text-align: center; padding: 28px 20px;">
@@ -1160,7 +902,7 @@
         <div class="feature-label">Privacy First</div>
         <h3>Your rules. Your chats.<br><em>Always yours.</em></h3>
         <p>Powered by Moss — a semantic engine running entirely in your browser as WebAssembly. No telemetry. No cloud calls. Zero network requests for validation. Everything stays on your device.</p>
-        <a href="#" class="feature-btn">Learn more</a>
+        <a href="#download" class="feature-btn">Learn more</a>
         <div class="feature-sub-items">
           <div class="sub-item">
             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1198,64 +940,40 @@
     </div>
   </section>
 
-  <!-- USE CASES / TESTIMONIALS -->
-  <section class="use-cases" id="demo">
-    <h2 class="section-title">How people use <em>Letigo</em></h2>
-    
-    <div class="testimonial-track">
-      <div class="testimonial-card">
-        <div class="testimonial-portrait">
-          <div class="portrait-bg green"></div>
-          <div class="torn-edge"></div>
-        </div>
-        <div class="testimonial-name">Maya, Product Lead</div>
-        <p class="testimonial-desc">Competitor analysis. Safe AI brainstorming. Protected roadmaps.</p>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-portrait">
-          <div class="portrait-bg.orange"></div>
-          <div class="torn-edge"></div>
-        </div>
-        <div class="testimonial-name">Daniel, Writer</div>
-        <p class="testimonial-desc">Brand voice rules. Tone consistency. No forbidden topics.</p>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-portrait">
-          <div class="portrait-bg.blue"></div>
-          <div class="torn-edge"></div>
-        </div>
-        <div class="testimonial-name">Sophie, Researcher</div>
-        <p class="testimonial-desc">Always cite sources. No future predictions. Structured outputs.</p>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-portrait">
-          <div class="portrait-bg.gray"></div>
-          <div class="torn-edge"></div>
-        </div>
-        <div class="testimonial-name">James, Student</div>
-        <p class="testimonial-desc">Concise study notes. Exam prep outlines. Daily learning plans.</p>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-portrait">
-          <div class="portrait-bg.purple"></div>
-          <div class="torn-edge"></div>
-        </div>
-        <div class="testimonial-name">Elena, Founder</div>
-        <p class="testimonial-desc">Investor-safe outputs. Confidential data guardrails. Pitch drafting.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section class="final-cta">
+  <!-- DOWNLOAD / INSTALL -->
+  <section class="download-section" id="download">
     <div class="cta-logo-mark">
       <span>L</span><span>E</span><span>T</span><span>I</span><span>G</span><span>O</span>
     </div>
     <h2>Stop repeating yourself.<br><em>Start enforcing rules.</em></h2>
     <p>Set your AI rules once with Letigo. Get consistent, trustworthy outputs across every chat, every time.</p>
     <div class="cta-buttons">
-      <a href="#" class="cta-primary">Try Letigo Free</a>
+      <a href="#" class="cta-primary">Download Extension</a>
       <a href="#" class="cta-secondary">View on GitHub</a>
+    </div>
+
+    <div class="install-steps">
+      <h4>How to install</h4>
+      <div class="step-row">
+        <span class="step-num">1</span>
+        <span class="step-text">Download the extension folder from GitHub</span>
+      </div>
+      <div class="step-row">
+        <span class="step-num">2</span>
+        <span class="step-text">Open Chrome and go to <code>chrome://extensions</code></span>
+      </div>
+      <div class="step-row">
+        <span class="step-num">3</span>
+        <span class="step-text">Enable "Developer mode" (top-right toggle)</span>
+      </div>
+      <div class="step-row">
+        <span class="step-num">4</span>
+        <span class="step-text">Click "Load unpacked" and select the <code>extension</code> folder</span>
+      </div>
+      <div class="step-row">
+        <span class="step-num">5</span>
+        <span class="step-text">Click the Letigo icon in your toolbar, set your rules, and start chatting!</span>
+      </div>
     </div>
   </section>
 
@@ -1273,7 +991,6 @@
   </footer>
 
   <script>
-    // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -1282,17 +999,13 @@
       });
     });
 
-    // Nav background on scroll
     const nav = document.querySelector('nav');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 100) {
-        nav.style.background = 'rgba(255, 255, 255, 0.95)';
-      } else {
-        nav.style.background = 'rgba(255, 255, 255, 0.85)';
-      }
+      nav.style.background = window.scrollY > 100 
+        ? 'rgba(255, 255, 255, 0.95)' 
+        : 'rgba(255, 255, 255, 0.88)';
     });
 
-    // Animate compliance bars on scroll
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1309,10 +1022,8 @@
         }
       });
     }, { threshold: 0.4 });
-
     document.querySelectorAll('.mini-score').forEach(el => observer.observe(el));
 
-    // Subtle parallax on clouds
     window.addEventListener('scroll', () => {
       const scrolled = window.scrollY;
       document.querySelectorAll('.cloud').forEach((cloud, i) => {

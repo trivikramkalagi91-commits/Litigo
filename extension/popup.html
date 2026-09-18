@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Letigo — Rules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <div class="header">
+      <div class="logo">
+        <span class="logo-mark">L</span>
+        <span class="logo-text">LETIGO</span>
+      </div>
+      <label class="master-toggle">
+        <input type="checkbox" id="masterEnabled" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="subtitle">AI Rule Enforcer</div>
+
+    <div class="section-label">Your Rules</div>
+    <div id="rulesList" class="rules-list"></div>
+
+    <div class="add-rule">
+      <input type="text" id="newRuleInput" placeholder="Add a new rule...">
+      <button id="addRuleBtn">+</button>
+    </div>
+
+    <div class="quick-add">
+      <div class="section-label">Quick Add</div>
+      <div class="quick-buttons">
+        <button class="quick-btn" data-rule='{"text":"Never make future predictions","type":"forbidden","keywords":["will","going to","predict","forecast","expected to"]}'>No predictions</button>
+        <button class="quick-btn" data-rule='{"text":"Keep responses concise","type":"length"}'>Be concise</button>
+        <button class="quick-btn" data-rule='{"text":"Always use bullet points","type":"format"}'>Bullet points</button>
+        <button class="quick-btn" data-rule='{"text":"Use simple language","type":"style"}'>Simple language</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="stats">
+        <span id="statChecks">0 checks</span>
+        <span id="statCaught">0 caught</span>
+      </div>
+      <div class="badge">Powered by Moss</div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

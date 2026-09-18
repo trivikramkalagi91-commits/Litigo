@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letigo Test — AI Chat Simulation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #FDF8F0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .test-header {
+      padding: 16px 24px;
+      background: white;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .test-header h1 { font-size: 16px; font-weight: 600; font-family: inherit; }
+    .letigo-status {
+      padding: 6px 14px;
+      background: rgba(0, 204, 109, 0.1);
+      border: 1px solid rgba(0, 204, 109, 0.25);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2E7D32;
+    }
+    .chat-container {
+      flex: 1;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .chat-message {
+      display: flex;
+      gap: 12px;
+      max-width: 85%;
+    }
+    .chat-message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .chat-message.user .chat-avatar {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    .chat-message.ai .chat-avatar {
+      background: rgba(0, 204, 109, 0.15);
+      color: #00CC6D;
+    }
+    .chat-bubble {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .chat-message.user .chat-bubble {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    .chat-message.ai .chat-bubble {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.06);
+      color: #333;
+    }
+    .demo-ai-response {
+      /* This class triggers Letigo's content script */
+      position: relative;
+    }
+    .input-area {
+      padding: 20px 24px;
+      background: white;
+      border-top: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      gap: 12px;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+    .input-area input:focus { border-color: #00CC6D; }
+    .input-area button {
+      padding: 12px 24px;
+      background: #00CC6D;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .input-area button:hover { background: #00B861; }
+    .typing-indicator {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px 0;
+    }
+    .typing-indicator span {
+      width: 6px;
+      height: 6px;
+      background: #999;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+    .rules-panel {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      width: 280px;
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+    .rules-panel h3 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rules-panel .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #FAFAF8;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .rules-panel .rule-item .dot {
+      width: 8px;
+      height: 8px;
+      background: #00CC6D;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .rules-panel .rule-item .dot.off { background: #ccc; }
+    .stats-box {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+      font-size: 11px;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
+    }
+    .stats-box strong { color: #333; }
+  </style>
+</head>
+<body>
+
+  <div class="test-header">
+    <h1>🧪 Letigo Test Environment — AI Chat Simulation</h1>
+    <span class="letigo-status">🛡️ Letigo Active — Rules Loaded</span>
+  </div>
+
+  <!-- Rules Panel (simulates popup info) -->
+  <div class="rules-panel">
+    <h3>🛡️ Active Rules</h3>
+    <div id="rulesDisplay"></div>
+    <div class="stats-box">
+      <span>Checks: <strong id="statChecks">0</strong></span>
+      <span>Caught: <strong id="statCaught">0</strong></span>
+    </div>
+  </div>
+
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-message user">
+      <div class="chat-avatar">U</div>
+      <div class="chat-bubble">Tell me about the smartphone market and who are the main players, including Company X.</div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Type a message... (try asking about competitors)">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    // ============================================
+    // SIMULATED LETIGO CONTENT SCRIPT LOGIC
+    // (Embedded here for demonstration purposes)
+    // ============================================
+    
+    const activeRules = [
+      { id: 1, text: "Keep answers under 50 words", enabled: true, type: "length" },
+      { id: 2, text: "Always use bullet points", enabled: true, type: "format" },
+      { id: 3, text: "Never mention Company X", enabled: true, type: "forbidden", keywords: ["company x", "competitor x", "the forbidden company"] },
+      { id: 4, text: "No future predictions", enabled: true, type: "forbidden", keywords: ["will", "going to", "predict", "forecast", "expected to", "by 2030"] }
+    ];
+
+    let stats = { totalChecks: 0, violationsCaught: 0 };
+
+    // Display rules in side panel
+    function displayRules() {
+      const container = document.getElementById('rulesDisplay');
+      container.innerHTML = activeRules.map(r => `
+        <div class="rule-item">
+          <span class="dot ${r.enabled ? '' : 'off'}"></span>
+          <span>${r.text}</span>
+        </div>
+      `).join('');
+    }
+    displayRules();
+
+    function updateStats() {
+      document.getElementById('statChecks').textContent = stats.totalChecks;
+      document.getElementById('statCaught').textContent = stats.violationsCaught;
+    }
+
+    // Validation logic (same as content.js)
+    function validateText(text) {
+      const violations = [];
+      const lowerText = text.toLowerCase();
+
+      activeRules.filter(r => r.enabled).forEach(rule => {
+        switch (rule.type) {
+          case "forbidden":
+            rule.keywords.forEach(keyword => {
+              if (lowerText.includes(keyword.toLowerCase())) {
+                violations.push({
+                  rule: rule.text,
+                  keyword: keyword,
+                  type: "forbidden",
+                  matchedText: findMatch(text, keyword)
+                });
+              }
+            });
+            break;
+          case "length":
+            const wordCount = text.split(/\s+/).length;
+            if (wordCount > 50) {
+              violations.push({ rule: rule.text, type: "length", wordCount, limit: 50 });
+            }
+            break;
+          case "format":
+            if (rule.text.toLowerCase().includes("bullet")) {
+              const hasBullets = /[•\-*]/.test(text) || /^\s*\d+\./m.test(text);
+              if (!hasBullets && text.split(/\s+/).length > 20) {
+                violations.push({ rule: rule.text, type: "format", issue: "No bullet points" });
+              }
+            }
+            break;
+        }
+      });
+      return violations;
+    }
+
+    function findMatch(text, keyword) {
+      const lower = text.toLowerCase();
+      const idx = lower.indexOf(keyword.toLowerCase());
+      return idx >= 0 ? text.substring(idx, idx + keyword.length) : keyword;
+    }
+
+    function highlightViolations(element, violations) {
+      violations.forEach(v => {
+        if (v.matchedText) {
+          const html = element.innerHTML;
+          const safeMatch = v.matchedText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(`(${safeMatch})`, 'gi');
+          element.innerHTML = html.replace(regex, 
+            '<span style="background:rgba(255,107,107,0.12);color:#D64545;text-decoration:line-through;padding:1px 3px;border-radius:3px;cursor:help;" title="Letigo: &quot;'+v.rule+'&quot; — violation caught">$1⚠</span>'
+          );
+        }
+      });
+    }
+
+    function addComplianceBadge(element, violations) {
+      const score = Math.max(0, Math.min(100, Math.round(100 - (violations.length * 20))));
+      const isLow = score < 70;
+      const badgeColor = isLow ? 'rgba(255,107,107,0.08)' : 'rgba(0,204,109,0.08)';
+      const badgeBorder = isLow ? 'rgba(255,107,107,0.2)' : 'rgba(0,204,109,0.2)';
+      const textColor = isLow ? '#D64545' : '#2E7D32';
+      
+      const badge = document.createElement('div');
+      badge.style.cssText = `
+        margin-top:10px;padding:6px 12px;background:${badgeColor};
+        border:1px solid ${badgeBorder};border-radius:100px;
+        display:inline-flex;align-items:center;gap:6px;
+        font-size:11px;font-weight:600;color:${textColor};
+      `;
+      badge.innerHTML = `🛡️ Compliance: ${score}% — ${violations.length} violation${violations.length > 1 ? 's' : ''} caught`;
+      element.appendChild(badge);
+    }
+
+    function processAIResponse(element) {
+      const text = element.textContent;
+      stats.totalChecks++;
+      
+      const violations = validateText(text);
+      
+      if (violations.length > 0) {
+        stats.violationsCaught++;
+        highlightViolations(element, violations);
+        addComplianceBadge(element, violations);
+        console.log('[Letigo] Violations caught:', violations);
+      } else {
+        const badge = document.createElement('div');
+        badge.style.cssText = `
+          margin-top:10px;padding:6px 12px;background:rgba(0,204,109,0.08);
+          border:1px solid rgba(0,204,109,0.2);border-radius:100px;
+          display:inline-flex;align-items:center;gap:6px;
+          font-size:11px;font-weight:600;color:#2E7D32;
+        `;
+        badge.innerHTML = '🛡️ Compliance: 100% — All rules satisfied ✓';
+        element.appendChild(badge);
+      }
+      
+      updateStats();
+    }
+
+    // ============================================
+    // SIMULATED AI RESPONSES
+    // ============================================
+    
+    const aiResponses = {
+      default: `Looking at the smartphone market landscape, Company X remains a dominant player with their premium device lineup. Samsung follows closely with strong global distribution. Going forward, we predict the market will grow significantly by 2030 as new technologies emerge.`,
+      
+      market: `The smartphone market includes several key players:
+• Samsung leads in global shipments
+• Apple dominates premium segment
+• Chinese manufacturers compete aggressively on price
+• Company X has been losing market share recently`,
+      
+      concise: `Key smartphone players:
+• Samsung — Global leader
+• Apple — Premium market
+• Xiaomi — Value segment
+• Various Chinese OEMs`,
+      
+      competitors: `Our analysis shows Company X is our primary rival. They compete on price and features. Competitor X also has strong distribution in emerging markets. The forbidden company shouldn't be underestimated.`,
+      
+      prediction: `The market will continue to evolve. We predict that foldable devices are going to become mainstream. Expected to reach 30% market share by 2030.`
+    };
+
+    function addUserMessage(text) {
+      const container = document.getElementById('chatContainer');
+      const msg = document.createElement('div');
+      msg.className = 'chat-message user';
+      msg.innerHTML = `
+        <div class="chat-avatar">U</div>
+        <div class="chat-bubble">${text}</div>
+      `;
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function addAIMessage(text) {
+      const container = document.getElementById('chatContainer');
+      const msg = document.createElement('div');
+      msg.className = 'chat-message ai';
+      msg.innerHTML = `
+        <div class="chat-avatar">AI</div>
+        <div class="chat-bubble demo-ai-response" data-ai-response="true">
+          <div class="typing-indicator"><span></span><span></span><span></span></div>
+        </div>
+      `;
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
+
+      // Simulate streaming delay
+      setTimeout(() => {
+        const bubble = msg.querySelector('.chat-bubble');
+        bubble.innerHTML = text.replace(/\n/g, '<br>');
+        // Process with Letigo validation
+        processAIResponse(bubble);
+        container.scrollTop = container.scrollHeight;
+      }, 1200);
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      addUserMessage(text);
+      input.value = '';
+
+      // Choose response based on input keywords
+      let responseKey = 'default';
+      const lower = text.toLowerCase();
+      if (lower.includes('competitor') || lower.includes('rival')) responseKey = 'competitors';
+      else if (lower.includes('concise') || lower.includes('short') || lower.includes('brief')) responseKey = 'concise';
+      else if (lower.includes('market') || lower.includes('player')) responseKey = 'market';
+      else if (lower.includes('future') || lower.includes('predict') || lower.includes('will')) responseKey = 'prediction';
+      
+      addAIMessage(aiResponses[responseKey]);
+    }
+
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Initial demo message
+    setTimeout(() => {
+      addAIMessage(aiResponses.default);
+    }, 800);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+/* Letigo Content Script Styles */
+/* Visual feedback for AI rule violations */
+
+.letigo-violation {
+  background: rgba(255, 107, 107, 0.12) !important;
+  color: #D64545 !important;
+  text-decoration: line-through !important;
+  padding: 1px 3px !important;
+  border-radius: 3px !important;
+  position: relative !important;
+  cursor: help !important;
+  transition: background 0.2s !important;
+}
+
+.letigo-violation:hover {
+  background: rgba(255, 107, 107, 0.2) !important;
+}
+
+.letigo-violation::after {
+  content: '⚠' !important;
+  display: inline-block !important;
+  margin-left: 2px !important;
+  font-size: 10px !important;
+  color: #D64545 !important;
+  text-decoration: none !important;
+  vertical-align: super !important;
+}
+
+.letigo-marker {
+  display: inline-block !important;
+  margin-left: 4px !important;
+  color: #D64545 !important;
+  font-size: 12px !important;
+  cursor: help !important;
+  animation: letigo-pulse 2s infinite !important;
+}
+
+.letigo-badge {
+  display: block !important;
+  margin-top: 8px !important;
+  padding: 0 !important;
+  clear: both !important;
+}
+
+.letigo-badge-inner {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 10px !important;
+  background: rgba(0, 204, 109, 0.08) !important;
+  border: 1px solid rgba(0, 204, 109, 0.2) !important;
+  border-radius: 100px !important;
+  font-size: 11px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: #2E7D32 !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+.letigo-badge.low-score .letigo-badge-inner {
+  background: rgba(255, 107, 107, 0.08) !important;
+  border-color: rgba(255, 107, 107, 0.2) !important;
+  color: #D64545 !important;
+}
+
+.letigo-badge-icon {
+  font-size: 12px !important;
+}
+
+.letigo-badge-detail {
+  font-weight: 400 !important;
+  opacity: 0.8 !important;
+  font-size: 10px !important;
+}
+
+/* Floating Letigo status indicator */
+.letigo-status {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 999999 !important;
+  padding: 8px 14px !important;
+  background: rgba(0, 204, 109, 0.95) !important;
+  color: #000 !important;
+  border-radius: 100px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+  box-shadow: 0 4px 16px rgba(0, 204, 109, 0.3) !important;
+  cursor: pointer !important;
+  transition: all 0.3s !important;
+  user-select: none !important;
+}
+
+.letigo-status:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0, 204, 109, 0.4) !important;
+}
+
+.letigo-status.disabled {
+  background: rgba(150, 150, 150, 0.9) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+@keyframes letigo-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes letigo-slidein {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

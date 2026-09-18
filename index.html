@@ -3,178 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Letigo — AI Rule Enforcer & Trust Protocol</title>
+  <title>Letigo — Universal AI Rule Enforcer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Host+Grotesk:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Host+Grotesk:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
   <style>
+    /* ============================================
+       DESIGN REFERENCES:
+       - supahero.io: Split hero, browser mockup, bento grid
+       - bestfreefonts.com: Typography pairing, clean grids
+       - logosystem.co: Integration showcase
+       - cosmos.so: Minimalist floating elements
+       - pafolios.com: Editorial serif typography, cream sections
+       - jitter.video: Bold typography, logo bar, simple CTAs
+       - recent.design: Clean nav structure, filter pills
+       ============================================ */
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --neon-green: #00FF41;
-      --neon-purple: #A855F7;
-      --neon-blue: #00BFFF;
-      --neon-pink: #FF0080;
-      --neon-orange: #FF6B00;
-      --dark-bg: #0A0A0A;
-      --cream-bg: #F5F1E8;
-      --light-bg: #EDE9F2;
+      --bg-primary: #0A0A0A;
+      --bg-secondary: #F5F1E8;
+      --bg-tertiary: #111111;
+      --text-primary: #FFFFFF;
+      --text-secondary: #888888;
+      --text-tertiary: #555555;
+      --accent: #00FF88;
+      --accent-dark: #00CC6D;
+      --border: rgba(255,255,255,0.08);
+      --border-light: rgba(0,0,0,0.1);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Host Grotesk', sans-serif;
-      background: var(--dark-bg);
-      color: #fff;
-      overflow-x: hidden;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* COSMOS.SO STYLE FLOATING ELEMENTS */
-    .floating-container {
+    h1, h2, h3, h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .serif {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; font-family: inherit; }
+
+    /* ============================================
+       COSMOS.SO: Subtle floating background elements
+       ============================================ */
+    .bg-decoration {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
     }
 
-    .float-card {
+    .bg-blob {
       position: absolute;
-      width: 80px;
-      height: 100px;
-      border-radius: 16px;
-      opacity: 0.15;
-      animation: floatRotate 20s linear infinite;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.06;
     }
 
-    @keyframes floatRotate {
-      0% { transform: rotate(0deg) translateY(0px); }
-      50% { transform: rotate(180deg) translateY(-30px); }
-      100% { transform: rotate(360deg) translateY(0px); }
+    .bg-blob.green {
+      width: 600px;
+      height: 600px;
+      background: var(--accent);
+      top: -200px;
+      right: -100px;
     }
 
-    /* NAVIGATION - MIX OF JITTER.VIDEO + RECENT.DESIGN */
+    .bg-blob.blue {
+      width: 400px;
+      height: 400px;
+      background: #4A9EFF;
+      bottom: 10%;
+      left: -100px;
+    }
+
+    .float-shape {
+      position: absolute;
+      width: 60px;
+      height: 80px;
+      border-radius: 12px;
+      opacity: 0.04;
+      background: linear-gradient(135deg, var(--accent), #4A9EFF);
+      animation: float 15s ease-in-out infinite;
+    }
+
+    .float-shape:nth-child(3) { top: 20%; left: 5%; animation-delay: 0s; }
+    .float-shape:nth-child(4) { top: 60%; right: 8%; animation-delay: -5s; }
+    .float-shape:nth-child(5) { bottom: 15%; left: 15%; animation-delay: -10s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-25px) rotate(5deg); }
+    }
+
+    /* ============================================
+       JITTER.VIDEO + RECENT.DESIGN: Clean navigation
+       ============================================ */
     nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1000;
+      z-index: 100;
+      padding: 18px 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 48px;
-      background: rgba(10, 10, 10, 0.85);
+      background: rgba(10, 10, 10, 0.8);
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid var(--border);
     }
 
-    .nav-logo {
+    .nav-brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-weight: 800;
-      font-size: 24px;
-      letter-spacing: -0.02em;
     }
 
-    .logo-robot {
-      width: 36px;
+    .nav-logo {
       height: 36px;
-      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #444;
-      position: relative;
+      width: auto;
+      object-fit: contain;
     }
 
-    .logo-robot::before {
-      content: '';
-      position: absolute;
-      width: 24px;
-      height: 18px;
-      background: var(--neon-green);
-      border-radius: 2px;
-      box-shadow: 0 0 10px var(--neon-green);
-    }
-
-    .logo-robot::after {
-      content: ': )';
-      position: relative;
-      z-index: 1;
-      color: #000;
-      font-size: 10px;
-      font-weight: bold;
-      font-family: 'JetBrains Mono', monospace;
+    .nav-brand-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
     }
 
     .nav-links {
       display: flex;
-      gap: 32px;
+      gap: 36px;
       list-style: none;
     }
 
     .nav-links a {
-      color: #888;
-      text-decoration: none;
       font-size: 14px;
       font-weight: 500;
+      color: var(--text-secondary);
       transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover { color: var(--text-primary); }
 
     .nav-cta {
-      padding: 12px 24px;
-      background: linear-gradient(135deg, var(--neon-green), #00CC33);
+      padding: 10px 22px;
+      background: var(--accent);
       color: #000;
-      border: none;
-      border-radius: 100px;
-      font-weight: 700;
       font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+      font-weight: 600;
+      border-radius: 100px;
+      transition: all 0.2s;
     }
 
-    /* HERO SECTION - SUPAHERO + JITTER.VIDEO MIX */
+    .nav-cta:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    /* ============================================
+       SUPAHERO: Split hero layout with browser mockup
+       ============================================ */
     .hero {
       position: relative;
       min-height: 100vh;
       padding: 140px 48px 80px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 60px;
+      gap: 80px;
       align-items: center;
-      background: 
-        radial-gradient(ellipse at 20% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(0, 255, 65, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 60% 80%, rgba(0, 191, 255, 0.1) 0%, transparent 50%),
-        var(--dark-bg);
       z-index: 1;
     }
+
+    .hero-content { max-width: 560px; }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 8px 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.15);
       border-radius: 100px;
       font-size: 13px;
-      color: #aaa;
-      margin-bottom: 32px;
+      color: var(--accent);
+      margin-bottom: 28px;
     }
 
     .hero-badge .dot {
-      width: 8px;
-      height: 8px;
-      background: var(--neon-green);
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
@@ -185,364 +223,285 @@
     }
 
     .hero h1 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: clamp(48px, 6vw, 88px);
+      font-size: clamp(44px, 5.5vw, 72px);
       font-weight: 800;
-      line-height: 0.95;
-      letter-spacing: -0.03em;
+      line-height: 1.02;
       margin-bottom: 24px;
     }
 
-    .hero h1 .line1 { color: #fff; display: block; }
-    .hero h1 .line2 { 
-      background: linear-gradient(135deg, var(--neon-green), var(--neon-blue), var(--neon-purple));
+    .hero h1 .accent-text {
+      background: linear-gradient(135deg, var(--accent), #4A9EFF);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      display: block;
-    }
-    .hero h1 .line3 { 
-      font-family: 'Fraunces', serif;
-      font-style: italic;
-      color: #666;
-      display: block;
-      font-size: 0.6em;
-      margin-top: 8px;
     }
 
     .hero p {
       font-size: 18px;
-      line-height: 1.6;
-      color: #888;
-      margin-bottom: 40px;
-      max-width: 520px;
+      color: var(--text-secondary);
+      margin-bottom: 36px;
+      line-height: 1.7;
     }
 
     .hero-ctas {
       display: flex;
-      gap: 16px;
-      margin-bottom: 48px;
+      gap: 14px;
+      margin-bottom: 40px;
     }
 
     .btn-primary {
-      padding: 16px 32px;
-      background: linear-gradient(135deg, var(--neon-green), #00CC33);
+      padding: 14px 28px;
+      background: var(--accent);
       color: #000;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
       font-size: 15px;
-      cursor: pointer;
+      font-weight: 600;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 0 40px rgba(0, 255, 65, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 255, 136, 0.2);
     }
 
     .btn-secondary {
-      padding: 16px 32px;
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 12px;
-      font-weight: 600;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--text-primary);
       font-size: 15px;
-      cursor: pointer;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: all 0.2s;
     }
 
-    /* CATEGORY PILLS - RECENT.DESIGN + BESTFREEFONTS STYLE */
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* BESTFREEFONTS + RECENT.DESIGN: Category pills */
     .category-pills {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 32px;
     }
 
     .pill {
-      padding: 8px 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
       border-radius: 100px;
-      font-size: 13px;
-      color: #888;
-      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-secondary);
       transition: all 0.2s;
     }
 
+    .pill:hover {
+      color: var(--text-primary);
+      border-color: rgba(255,255,255,0.15);
+    }
+
     .pill.active {
-      background: #000;
-      color: #fff;
-      border-color: #333;
+      background: var(--text-primary);
+      color: #000;
+      border-color: var(--text-primary);
     }
 
-    .hero-trust {
-      display: flex;
-      gap: 32px;
-      align-items: center;
-    }
-
-    .trust-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: #666;
-    }
-
-    .trust-item svg { color: var(--neon-green); }
-
-    /* HERO VISUAL - SUPAHERO PRODUCT MOCKUP STYLE */
+    /* Hero visual - browser mockup (supahero.io style) */
     .hero-visual {
       position: relative;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
     }
 
-    .browser-mockup {
+    .browser-mock {
       width: 100%;
-      max-width: 560px;
-      background: linear-gradient(145deg, #1a1a1a, #111);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
+      max-width: 540px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 
-        0 40px 80px rgba(0,0,0,0.5),
-        0 0 100px rgba(168, 85, 247, 0.1);
-      transform: perspective(1000px) rotateY(-5deg);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+      transform: perspective(1200px) rotateY(-4deg);
+      transition: transform 0.4s;
     }
 
-    .browser-header {
+    .browser-mock:hover {
+      transform: perspective(1200px) rotateY(0deg);
+    }
+
+    .browser-bar {
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
-    .browser-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .dot-red { background: #FF5F57; }
-    .dot-yellow { background: #FEBC2E; }
-    .dot-green { background: #28C840; }
+    .browser-dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.red { background: #FF5F57; }
+    .dot.yellow { background: #FEBC2E; }
+    .dot.green { background: #28C840; }
 
     .browser-url {
       flex: 1;
       margin-left: 16px;
-      padding: 4px 12px;
+      padding: 5px 12px;
       background: rgba(0,0,0,0.3);
       border-radius: 6px;
       font-size: 11px;
-      color: #666;
+      color: var(--text-tertiary);
       font-family: 'JetBrains Mono', monospace;
     }
 
-    .browser-content {
-      padding: 24px;
-      min-height: 320px;
-    }
+    .browser-body { padding: 24px; }
 
-    .chat-message {
-      margin-bottom: 16px;
+    .chat-line {
       display: flex;
-      gap: 12px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
     .chat-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .chat-avatar.user {
+      background: rgba(0, 255, 136, 0.15);
+      color: var(--accent);
+    }
+
+    .chat-avatar.ai {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
     }
 
     .chat-bubble {
-      background: rgba(255,255,255,0.05);
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
       line-height: 1.5;
-      max-width: 80%;
+      max-width: 85%;
     }
 
-    .chat-bubble .violation {
-      color: #FF4444;
+    .chat-bubble.user {
+      background: rgba(0, 255, 136, 0.06);
+      color: #ccc;
+    }
+
+    .chat-bubble.ai {
+      background: rgba(255,255,255,0.04);
+      color: #ddd;
+    }
+
+    .violation {
+      color: #FF6B6B;
       text-decoration: line-through;
-      background: rgba(255, 68, 68, 0.1);
-      padding: 2px 4px;
-      border-radius: 4px;
+      background: rgba(255, 107, 107, 0.08);
+      padding: 1px 4px;
+      border-radius: 3px;
     }
 
-    .compliance-badge {
+    .compliance-tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       margin-top: 8px;
-      padding: 6px 12px;
-      background: rgba(0, 255, 65, 0.1);
-      border: 1px solid rgba(0, 255, 65, 0.3);
+      padding: 5px 10px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.2);
       border-radius: 100px;
-      font-size: 12px;
-      color: var(--neon-green);
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 600;
     }
 
-    /* FLOATING ROBOT - FROM USER'S CHARACTER */
-    .floating-robot {
-      position: absolute;
-      top: -40px;
-      right: -20px;
-      width: 120px;
-      height: 140px;
-      animation: robotFloat 4s ease-in-out infinite;
-      z-index: 10;
-    }
-
-    @keyframes robotFloat {
-      0%, 100% { transform: translateY(0) rotate(-3deg); }
-      50% { transform: translateY(-20px) rotate(3deg); }
-    }
-
-    .robot-body {
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-
-    .robot-head {
-      width: 80px;
-      height: 70px;
-      background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-      border-radius: 10px;
-      margin: 0 auto;
-      border: 3px solid #555;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
-    }
-
-    .robot-screen {
-      width: 60px;
-      height: 45px;
-      background: var(--neon-green);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-    }
-
-    .robot-face {
-      font-family: 'JetBrains Mono', monospace;
-      color: #000;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .robot-torso {
-      width: 60px;
-      height: 40px;
-      background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-      border-radius: 8px;
-      margin: 8px auto 0;
-      border: 2px solid #555;
-    }
-
-    .robot-legs {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 4px;
-    }
-
-    .robot-leg {
-      width: 16px;
-      height: 24px;
-      background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-      border-radius: 4px;
-      border: 2px solid #555;
-    }
-
-    /* SECTION 2: EDITORIAL STYLE - PAFOLIOS INFLUENCE */
-    .editorial-section {
+    /* ============================================
+       PAFOLIOS.COM: Editorial How It Works (cream)
+       ============================================ */
+    .how-section {
       position: relative;
       padding: 120px 48px;
-      background: var(--cream-bg);
+      background: var(--bg-secondary);
       color: #1a1a1a;
       z-index: 1;
     }
 
-    .editorial-header {
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-tertiary);
+      margin-bottom: 16px;
+    }
+
+    .how-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      margin-bottom: 60px;
       padding-bottom: 32px;
-      border-bottom: 2px solid #1a1a1a;
+      margin-bottom: 60px;
+      border-bottom: 1.5px solid #1a1a1a;
     }
 
-    .editorial-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #666;
+    .how-title h2 {
+      font-size: clamp(36px, 4.5vw, 60px);
+      font-weight: 800;
+      line-height: 1.05;
     }
 
-    .editorial-title {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(40px, 5vw, 72px);
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-
-    .editorial-issue {
+    .how-issue {
       font-family: 'Fraunces', serif;
       font-style: italic;
-      font-size: 18px;
+      font-size: 16px;
       color: #666;
     }
 
-    .how-it-works-grid {
+    .steps-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
+      gap: 48px;
     }
 
     .step-card {
       position: relative;
-      padding-top: 20px;
+      padding-top: 24px;
       border-top: 1px solid #ccc;
     }
 
-    .step-number {
+    .step-num {
       font-family: 'Fraunces', serif;
-      font-size: 72px;
-      font-weight: 900;
-      color: rgba(26, 26, 26, 0.08);
+      font-size: 80px;
+      font-weight: 700;
+      color: rgba(26, 26, 26, 0.06);
       position: absolute;
-      top: -10px;
+      top: -20px;
       left: 0;
       line-height: 1;
     }
 
     .step-card h3 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       margin-bottom: 12px;
       position: relative;
@@ -551,86 +510,84 @@
 
     .step-card p {
       font-size: 15px;
-      line-height: 1.6;
       color: #555;
+      line-height: 1.7;
     }
 
-    /* SECTION 3: BENTO GRID FEATURES - SUPAHERO + AI GENERATED STYLE */
+    /* ============================================
+       SUPAHERO.IO: Bento grid features
+       ============================================ */
     .features-section {
       position: relative;
       padding: 120px 48px;
-      background: 
-        linear-gradient(180deg, var(--dark-bg) 0%, #0D0D1A 100%);
       z-index: 1;
     }
 
     .section-header {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 64px;
     }
 
-    .section-header .eyebrow {
-      font-family: 'JetBrains Mono', monospace;
+    .section-header .label {
       font-size: 12px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--neon-purple);
+      letter-spacing: 0.12em;
+      color: var(--accent);
       margin-bottom: 16px;
     }
 
     .section-header h2 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: clamp(36px, 4.5vw, 56px);
+      font-size: clamp(32px, 4vw, 48px);
       font-weight: 800;
-      letter-spacing: -0.02em;
       margin-bottom: 16px;
     }
 
     .section-header h2 em {
       font-family: 'Fraunces', serif;
       font-style: italic;
-      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent);
     }
 
     .section-header p {
-      font-size: 18px;
-      color: #666;
-      max-width: 600px;
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 560px;
       margin: 0 auto;
     }
 
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(3, 200px);
+      grid-template-rows: repeat(2, 220px);
       gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .bento-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       padding: 28px;
       position: relative;
       overflow: hidden;
-      transition: transform 0.3s, border-color 0.3s;
+      transition: all 0.3s;
     }
 
     .bento-card:hover {
+      border-color: rgba(0, 255, 136, 0.2);
       transform: translateY(-4px);
-      border-color: rgba(255,255,255,0.15);
     }
 
     .bento-card.span-2 { grid-column: span 2; }
     .bento-card.span-2-rows { grid-row: span 2; }
 
     .bento-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(0, 255, 136, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -638,141 +595,89 @@
       font-size: 20px;
     }
 
-    .icon-green { background: rgba(0, 255, 65, 0.1); color: var(--neon-green); }
-    .icon-purple { background: rgba(168, 85, 247, 0.1); color: var(--neon-purple); }
-    .icon-blue { background: rgba(0, 191, 255, 0.1); color: var(--neon-blue); }
-    .icon-pink { background: rgba(255, 0, 128, 0.1); color: var(--neon-pink); }
-    .icon-orange { background: rgba(255, 107, 0, 0.1); color: var(--neon-orange); }
-
     .bento-card h4 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       margin-bottom: 8px;
     }
 
     .bento-card p {
       font-size: 14px;
-      color: #777;
-      line-height: 1.5;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
 
-    .bento-card .big-number {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 56px;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .bento-card .bg-glow {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.3;
-      right: -50px;
-      bottom: -50px;
-    }
-
-    .glow-green { background: var(--neon-green); }
-    .glow-purple { background: var(--neon-purple); }
-    .glow-blue { background: var(--neon-blue); }
-
-    /* MASONRY LOGO SHOWCASE - LOGOSYSTEM.CO STYLE */
-    .logo-showcase {
-      position: relative;
-      padding: 100px 48px;
-      background: var(--light-bg);
-      z-index: 1;
-    }
-
-    .logo-showcase h2 {
-      font-family: 'Fraunces', serif;
-      font-size: 42px;
-      font-weight: 900;
-      color: #1a1a1a;
-      text-align: center;
-      margin-bottom: 60px;
-      letter-spacing: -0.02em;
-    }
-
-    .masonry-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-auto-rows: 100px;
-      gap: 16px;
-    }
-
-    .masonry-item {
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .bento-card .big-stat {
       font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 52px;
       font-weight: 800;
-      font-size: 24px;
-      color: #fff;
-      overflow: hidden;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
     }
 
-    .masonry-item.tall { grid-row: span 2; }
-    .masonry-item.wide { grid-column: span 2; }
+    .bento-card .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
 
-    .masonry-item:nth-child(1) { background: linear-gradient(135deg, #84CC16, #65A30D); }
-    .masonry-item:nth-child(2) { background: linear-gradient(135deg, #1a1a1a, #0a0a0a); color: var(--neon-green); }
-    .masonry-item:nth-child(3) { background: linear-gradient(135deg, var(--neon-purple), #7C3AED); }
-    .masonry-item:nth-child(4) { background: linear-gradient(135deg, #F59E0B, #D97706); }
-    .masonry-item:nth-child(5) { background: linear-gradient(135deg, #EC4899, #DB2777); }
-    .masonry-item:nth-child(6) { background: linear-gradient(135deg, #06B6D4, #0891B2); }
-    .masonry-item:nth-child(7) { background: linear-gradient(135deg, #1f2937, #111827); color: #fff; }
-    .masonry-item:nth-child(8) { background: linear-gradient(135deg, #EF4444, #DC2626); }
+    .bento-glow {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--accent);
+      filter: blur(60px);
+      opacity: 0.08;
+      right: -40px;
+      bottom: -40px;
+    }
 
-    /* CUSTOMER LOGOS BAR - JITTER.VIDEO STYLE */
-    .trusted-by {
-      padding: 80px 48px;
-      background: var(--dark-bg);
-      border-top: 1px solid rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+    /* ============================================
+       JITTER.VIDEO: Customer logo bar
+       ============================================ */
+    .logo-bar-section {
+      padding: 60px 48px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       text-align: center;
-      z-index: 1;
       position: relative;
+      z-index: 1;
     }
 
-    .trusted-by p {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 40px;
+    .logo-bar-section p {
+      font-size: 13px;
+      color: var(--text-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      margin-bottom: 32px;
     }
 
-    .logo-bar {
+    .logo-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 60px;
+      gap: 56px;
       flex-wrap: wrap;
     }
 
-    .logo-bar span {
+    .logo-row span {
       font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: #444;
-      opacity: 0.6;
+      opacity: 0.5;
+      transition: opacity 0.2s;
     }
 
-    /* DEMO SECTION - SIDE BY SIDE */
+    .logo-row span:hover { opacity: 0.8; }
+
+    /* ============================================
+       Demo section
+       ============================================ */
     .demo-section {
       position: relative;
       padding: 120px 48px;
-      background: 
-        radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.1) 0%, transparent 60%),
-        var(--dark-bg);
       z-index: 1;
     }
 
@@ -780,26 +685,27 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 32px;
-      margin-top: 60px;
+      max-width: 1100px;
+      margin: 60px auto 0;
     }
 
     .demo-panel {
-      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
 
+    .demo-panel.bad { border-color: rgba(255, 107, 107, 0.15); }
+    .demo-panel.good { border-color: rgba(0, 255, 136, 0.2); }
+
     .demo-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-
-    .demo-panel.bad .demo-panel-header { border-color: rgba(255, 68, 68, 0.2); }
-    .demo-panel.good .demo-panel-header { border-color: rgba(0, 255, 65, 0.2); }
 
     .demo-status {
       display: flex;
@@ -810,347 +716,489 @@
     }
 
     .status-bad { color: #FF6B6B; }
-    .status-good { color: var(--neon-green); }
+    .status-good { color: var(--accent); }
 
-    .letigo-active-badge {
-      padding: 4px 12px;
-      background: rgba(0, 255, 65, 0.15);
-      border: 1px solid rgba(0, 255, 65, 0.3);
+    .active-badge {
+      padding: 4px 10px;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.2);
       border-radius: 100px;
       font-size: 11px;
-      color: var(--neon-green);
-      font-weight: 700;
+      color: var(--accent);
+      font-weight: 600;
     }
 
-    .demo-content {
-      padding: 24px;
-    }
+    .demo-body { padding: 24px; }
 
-    .demo-chat-line {
-      margin-bottom: 20px;
+    .demo-msg {
+      margin-bottom: 16px;
       padding: 12px 16px;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 14px;
       line-height: 1.6;
     }
 
-    .demo-chat-line.user {
-      background: rgba(168, 85, 247, 0.1);
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      color: #ccc;
-      margin-left: 40px;
+    .demo-msg.user {
+      background: rgba(102, 126, 234, 0.06);
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      color: #bbb;
+      margin-left: 30px;
     }
 
-    .demo-chat-line.ai {
+    .demo-msg.ai {
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.05);
-      margin-right: 40px;
+      border: 1px solid var(--border);
+      margin-right: 30px;
     }
 
-    .demo-chat-line.ai.bad-text {
-      color: #FF6B6B;
-      border-color: rgba(255, 107, 107, 0.2);
+    .demo-msg.ai.bad {
+      color: #FF8888;
+      border-color: rgba(255, 107, 107, 0.15);
     }
 
-    .demo-chat-line .caught {
-      color: #FF4444;
-      text-decoration: line-through;
-      background: rgba(255, 68, 68, 0.1);
-      padding: 1px 4px;
-      border-radius: 3px;
-    }
-
-    .demo-chat-line .caught-tag {
+    .caught-tag {
       display: inline-block;
       margin-left: 6px;
-      padding: 1px 6px;
-      background: rgba(255, 68, 68, 0.2);
+      padding: 2px 6px;
+      background: rgba(255, 107, 107, 0.15);
       border-radius: 4px;
       font-size: 10px;
-      color: #FF6B6B;
+      color: #FF8888;
       font-weight: 700;
     }
 
-    .compliance-score {
+    .score-row {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-top: 16px;
       padding: 12px;
-      background: rgba(0, 255, 65, 0.05);
-      border: 1px solid rgba(0, 255, 65, 0.2);
       border-radius: 10px;
     }
+
+    .score-row.good {
+      background: rgba(0, 255, 136, 0.04);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+    }
+
+    .score-row.bad {
+      background: rgba(255, 107, 107, 0.04);
+      border: 1px solid rgba(255, 107, 107, 0.15);
+    }
+
+    .score-label {
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 110px;
+    }
+
+    .score-label.good { color: var(--accent); }
+    .score-label.bad { color: #FF8888; }
 
     .score-bar {
       flex: 1;
       height: 6px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
       border-radius: 3px;
       overflow: hidden;
     }
 
     .score-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--neon-green), #00CC33);
       border-radius: 3px;
+      transition: width 1.5s ease-out;
+    }
+
+    .score-fill.good {
+      width: 93%;
+      background: linear-gradient(90deg, var(--accent), #00CC6D);
     }
 
     .score-fill.bad {
-      background: linear-gradient(90deg, #FF4444, #FF6B6B);
+      width: 34%;
+      background: linear-gradient(90deg, #FF6B6B, #FF8888);
     }
 
-    /* TECHNOLOGY SECTION */
+    /* ============================================
+       Technology section
+       ============================================ */
     .tech-section {
       position: relative;
       padding: 120px 48px;
-      background: linear-gradient(180deg, #0D0D1A 0%, var(--dark-bg) 100%);
+      background: var(--bg-secondary);
+      color: #1a1a1a;
       z-index: 1;
     }
+
+    .tech-section .section-header h2 { color: #1a1a1a; }
+    .tech-section .section-header p { color: #666; }
+    .tech-section .label { color: #009955; }
 
     .tech-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 80px;
+      gap: 64px;
+      max-width: 1100px;
+      margin: 60px auto 0;
       align-items: center;
-      margin-top: 60px;
     }
 
     .tech-features {
       display: flex;
       flex-direction: column;
-      gap: 24px;
-    }
-
-    .tech-feature {
-      display: flex;
       gap: 20px;
-      padding: 20px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px;
     }
 
-    .tech-feature-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(0, 191, 255, 0.2));
+    .tech-item {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: white;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: var(--radius-md);
+      transition: all 0.2s;
+    }
+
+    .tech-item:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      transform: translateX(4px);
+    }
+
+    .tech-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(0, 153, 85, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Bricolage Grotesque', sans-serif;
       font-weight: 700;
       font-size: 14px;
-      color: var(--neon-purple);
+      color: #009955;
     }
 
-    .tech-feature h4 {
-      font-family: 'Bricolage Grotesque', sans-serif;
+    .tech-item h4 {
       font-size: 16px;
       font-weight: 700;
       margin-bottom: 4px;
     }
 
-    .tech-feature p {
+    .tech-item p {
       font-size: 14px;
-      color: #777;
+      color: #666;
+      line-height: 1.6;
     }
 
-    .architecture-diagram {
-      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      padding: 40px;
+    .arch-diagram {
+      background: white;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+
+    .arch-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #888;
+      text-align: center;
+      margin-bottom: 24px;
     }
 
     .arch-node {
-      padding: 16px 20px;
-      border-radius: 12px;
-      margin-bottom: 16px;
+      padding: 14px 18px;
+      border-radius: 10px;
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
+      margin-bottom: 12px;
     }
 
-    .arch-node.input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
-    .arch-node.process { background: rgba(0, 255, 65, 0.1); border: 1px solid rgba(0, 255, 65, 0.3); color: var(--neon-green); }
-    .arch-node.moss { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); color: var(--neon-purple); }
-    .arch-node.output { background: rgba(0, 191, 255, 0.1); border: 1px solid rgba(0, 191, 255, 0.3); color: var(--neon-blue); }
+    .arch-node.n1 { background: #f5f5f5; border: 1px solid #e5e5e5; color: #333; }
+    .arch-node.n2 { background: rgba(0, 153, 85, 0.06); border: 1px solid rgba(0, 153, 85, 0.15); color: #007744; }
+    .arch-node.n3 { background: rgba(102, 126, 234, 0.06); border: 1px solid rgba(102, 126, 234, 0.15); color: #4a5fc1; }
+    .arch-node.n4 { background: rgba(74, 158, 255, 0.06); border: 1px solid rgba(74, 158, 255, 0.15); color: #2a7ad1; }
 
     .arch-arrow {
       text-align: center;
-      color: #444;
-      font-size: 20px;
+      color: #ccc;
+      font-size: 16px;
       margin: 4px 0;
     }
 
-    /* FINAL CTA */
-    .final-cta {
+    .arch-note {
+      text-align: center;
+      font-size: 12px;
+      color: #009955;
+      margin-top: 16px;
+      font-weight: 500;
+    }
+
+    /* ============================================
+       LOGOSYSTEM.CO: Integration showcase grid
+       ============================================ */
+    .integrations-section {
       position: relative;
       padding: 120px 48px;
-      background: 
-        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 65, 0.15) 0%, transparent 60%),
-        linear-gradient(180deg, var(--dark-bg) 0%, #050505 100%);
+      z-index: 1;
+    }
+
+    .integration-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 100px;
+      gap: 16px;
+      max-width: 1000px;
+      margin: 60px auto 0;
+    }
+
+    .int-card {
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      transition: transform 0.2s;
+    }
+
+    .int-card:hover { transform: scale(1.03); }
+
+    .int-card.tall { grid-row: span 2; }
+    .int-card.wide { grid-column: span 2; }
+
+    .int-card:nth-child(1) { background: linear-gradient(135deg, #10a37f, #0d8a6a); }
+    .int-card:nth-child(2) { background: linear-gradient(135deg, #D97757, #c45a3a); }
+    .int-card:nth-child(3) { background: linear-gradient(135deg, #4285F4, #3367D6); }
+    .int-card:nth-child(4) { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .int-card:nth-child(5) { background: linear-gradient(135deg, #111827, #1f2937); }
+    .int-card:nth-child(6) { background: linear-gradient(135deg, #EC4899, #DB2777); }
+    .int-card:nth-child(7) { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+
+    /* ============================================
+       Final CTA - jitter.video clean centered style
+       ============================================ */
+    .cta-section {
+      position: relative;
+      padding: 120px 48px;
       text-align: center;
       z-index: 1;
+      overflow: hidden;
     }
 
-    .final-cta h2 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: clamp(40px, 5vw, 64px);
+    .cta-bg-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: var(--accent);
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.08;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .cta-logo {
+      height: 56px;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(36px, 4.5vw, 56px);
       font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
     }
 
-    .final-cta h2 em {
+    .cta-section h2 em {
       font-family: 'Fraunces', serif;
       font-style: italic;
-      color: var(--neon-green);
+      color: var(--accent);
     }
 
-    .final-cta p {
-      font-size: 18px;
-      color: #777;
-      margin-bottom: 40px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .final-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-    }
-
-    /* FOOTER */
-    footer {
-      padding: 60px 48px 40px;
-      background: #050505;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      z-index: 1;
+    .cta-section p {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 480px;
+      margin: 0 auto 36px;
       position: relative;
+      z-index: 1;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ============================================
+       Footer
+       ============================================ */
+    footer {
+      padding: 48px;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
     }
 
     .footer-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
 
     .footer-brand {
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .footer-logo { height: 32px; }
+
+    .footer-brand-name {
       font-family: 'Bricolage Grotesque', sans-serif;
-      font-weight: 800;
-      font-size: 20px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-left: 8px;
     }
 
     .footer-links {
       display: flex;
-      gap: 32px;
+      gap: 28px;
     }
 
     .footer-links a {
-      color: #555;
-      text-decoration: none;
       font-size: 14px;
+      color: var(--text-tertiary);
       transition: color 0.2s;
     }
 
-    .footer-links a:hover { color: #fff; }
+    .footer-links a:hover { color: var(--text-secondary); }
 
     .footer-bottom {
-      padding-top: 32px;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
       text-align: center;
       font-size: 13px;
-      color: #444;
+      color: var(--text-tertiary);
     }
 
-    /* DECORATIVE AI-GENERATED STYLE ELEMENTS */
-    .grid-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: 
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 40px 40px;
-      z-index: 0;
-    }
-
-    .gradient-blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.4;
-      z-index: 0;
-    }
-
+    /* ============================================
+       Responsive
+       ============================================ */
     @media (max-width: 1024px) {
-      .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; }
-      .how-it-works-grid { grid-template-columns: 1fr; }
-      .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
-      .bento-card.span-2 { grid-column: span 1; }
-      .demo-grid { grid-template-columns: 1fr; }
-      .tech-grid { grid-template-columns: 1fr; }
-      .masonry-grid { grid-template-columns: repeat(2, 1fr); }
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
+      
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 120px 24px 60px;
+        gap: 48px;
+      }
+      
+      .how-section, .features-section, .demo-section, .tech-section, .integrations-section, .cta-section, footer {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+      
+      .steps-grid { grid-template-columns: 1fr; gap: 32px; }
+      
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+      }
+      .bento-card.span-2 { grid-column: span 1; }
+      .bento-card.span-2-rows { grid-row: span 1; }
+      
+      .demo-grid, .tech-grid { grid-template-columns: 1fr; }
+      
+      .integration-grid { grid-template-columns: repeat(2, 1fr); }
+      
+      .how-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      
+      .logo-row { gap: 28px; }
+      
+      .footer-content {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- FLOATING COSMOS-STYLE ELEMENTS -->
-  <div class="floating-container">
-    <div class="float-card" style="top:10%;left:5%;background:linear-gradient(135deg,#A855F7,#00FF41);animation-delay:0s;"></div>
-    <div class="float-card" style="top:20%;right:8%;background:linear-gradient(135deg,#00BFFF,#FF0080);animation-delay:-5s;"></div>
-    <div class="float-card" style="top:60%;left:3%;background:linear-gradient(135deg,#FF6B00,#A855F7);animation-delay:-10s;"></div>
-    <div class="float-card" style="top:75%;right:5%;background:linear-gradient(135deg,#00FF41,#00BFFF);animation-delay:-15s;"></div>
-    <div class="float-card" style="top:40%;left:50%;background:linear-gradient(135deg,#FF0080,#FF6B00);animation-delay:-7s;opacity:0.08;"></div>
+  <!-- Background decoration (cosmos.so style) -->
+  <div class="bg-decoration">
+    <div class="bg-blob green"></div>
+    <div class="bg-blob blue"></div>
+    <div class="float-shape"></div>
+    <div class="float-shape"></div>
+    <div class="float-shape"></div>
   </div>
 
-  <!-- NAVIGATION -->
+  <!-- Navigation (jitter.video + recent.design style) -->
   <nav>
-    <div class="nav-logo">
-      <div class="logo-robot"></div>
-      Letigo
+    <div class="nav-brand">
+      <img src="https://p16-flow-file-sign.ibyteimg.com/tos-mya-i-u8dpqn1f20/rc/pc/super_tool/85eb6ed14c1f4beca555352bed28ae92?rcl=20260918213412FE4F696BECC8F817FAC4&rk3s=8e244e95&rrcfp=f512b60b&x-expires=1790343267&x-signature=SMY83Erh4Kw9%2Bv3GkqifYPgp9oE%3D" alt="Letigo" class="nav-logo">
+      <span class="nav-brand-name">Letigo</span>
     </div>
     <ul class="nav-links">
       <li><a href="#how">How it works</a></li>
       <li><a href="#features">Features</a></li>
       <li><a href="#demo">Demo</a></li>
       <li><a href="#tech">Technology</a></li>
-      <li><a href="#logos">Integrations</a></li>
+      <li><a href="#integrations">Integrations</a></li>
     </ul>
-    <button class="nav-cta">Add to Chrome</button>
+    <a href="#" class="nav-cta">Add to Chrome</a>
   </nav>
 
-  <!-- HERO SECTION -->
+  <!-- Hero Section (supahero.io split layout) -->
   <section class="hero">
-    <div class="grid-bg"></div>
     <div class="hero-content">
       <div class="hero-badge">
         <span class="dot"></span>
-        Powered by Moss · Sub-10ms semantic validation · WASM Local
+        Powered by Moss · Sub-10ms semantic validation
       </div>
       
       <h1>
-        <span class="line1">Stop chasing.</span>
-        <span class="line2">Start enforcing.</span>
-        <span class="line3">— the universal AI rule protocol</span>
+        Set your rules once.<br>
+        <span class="accent-text">Enforce them everywhere.</span>
       </h1>
       
       <p>A browser extension that makes sure every AI chat follows your rules — no matter how many turns deep the conversation goes. Runs locally in your browser. Your data never leaves your device.</p>
+      
+      <div class="hero-ctas">
+        <button class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          Add to Chrome — Free
+        </button>
+        <button class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Watch Demo
+        </button>
+      </div>
       
       <div class="category-pills">
         <span class="pill active">All</span>
@@ -1159,75 +1207,32 @@
         <span class="pill">Branding</span>
         <span class="pill">Product</span>
         <span class="pill">Typography</span>
-        <span class="pill">Motion</span>
-      </div>
-      
-      <div class="hero-ctas">
-        <button class="btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          Add to Chrome — It's Free
-        </button>
-        <button class="btn-secondary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          Watch Demo
-        </button>
-      </div>
-      
-      <div class="hero-trust">
-        <div class="trust-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          100% local processing
-        </div>
-        <div class="trust-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Works on ChatGPT, Claude, Gemini
-        </div>
-        <div class="trust-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Zero setup per chat
-        </div>
       </div>
     </div>
     
     <div class="hero-visual">
-      <div class="floating-robot">
-        <div class="robot-body">
-          <div class="robot-head">
-            <div class="robot-screen">
-              <span class="robot-face">: )</span>
-            </div>
+      <div class="browser-mock">
+        <div class="browser-bar">
+          <div class="browser-dots">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
           </div>
-          <div class="robot-torso"></div>
-          <div class="robot-legs">
-            <div class="robot-leg"></div>
-            <div class="robot-leg"></div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="browser-mockup">
-        <div class="browser-header">
-          <div class="browser-dot dot-red"></div>
-          <div class="browser-dot dot-yellow"></div>
-          <div class="browser-dot dot-green"></div>
           <div class="browser-url">chat.openai.com — LETIGO ACTIVE ✓</div>
         </div>
-        <div class="browser-content">
-          <div class="chat-message">
-            <div class="chat-avatar" style="background:linear-gradient(135deg,#666,#444);">U</div>
-            <div class="chat-bubble">Summarize our product strategy and who are our main competitors?</div>
+        <div class="browser-body">
+          <div class="chat-line">
+            <div class="chat-avatar user">U</div>
+            <div class="chat-bubble user">Summarize our product strategy and competitors?</div>
           </div>
-          <div class="chat-message">
-            <div class="chat-avatar">AI</div>
-            <div class="chat-bubble">
-              • Focus on enterprise security solutions<br>
-              • Expand to SMB market in Q2<br>
+          <div class="chat-line">
+            <div class="chat-avatar ai">AI</div>
+            <div class="chat-bubble ai">
+              • Focus on enterprise security<br>
+              • Expand to SMB in Q2<br>
               • <span class="violation">Company X</span> ⚠️ caught<br>
-              • Newer entrants focused on specific niches
-              <div class="compliance-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Compliance Score: 93%
-              </div>
+              • New niche-focused entrants
+              <div class="compliance-tag">✓ Compliance: 93%</div>
             </div>
           </div>
         </div>
@@ -1235,195 +1240,175 @@
     </div>
   </section>
 
-  <!-- EDITORIAL HOW IT WORKS - PAFOLIOS STYLE -->
-  <section class="editorial-section" id="how">
-    <div class="editorial-header">
-      <div>
-        <div class="editorial-label">Issue № 001 — How It Works</div>
-        <h2 class="editorial-title">Three steps.<br>Total control.</h2>
+  <!-- How It Works (pafolios.com editorial style) -->
+  <section class="how-section" id="how">
+    <div class="section-label">How It Works</div>
+    <div class="how-header">
+      <div class="how-title">
+        <h2>Three steps.<br><span class="serif">Total control.</span></h2>
       </div>
-      <div class="editorial-issue">Fall 2026 / YC × Moss</div>
+      <div class="how-issue">Fall 2026 / YC × Moss</div>
     </div>
     
-    <div class="how-it-works-grid">
+    <div class="steps-grid">
       <div class="step-card">
-        <span class="step-number">01</span>
+        <span class="step-num">01</span>
         <h3>Install & set your rules</h3>
-        <p>Add the extension, click the icon, and define your rules once. "Keep answers under 50 words." "Never mention competitors." "Always use bullet points." Set it and forget it.</p>
+        <p>Add the extension, click the icon, and define your rules once. "Keep answers under 50 words." "Never mention competitors." "Always use bullet points."</p>
       </div>
       <div class="step-card">
-        <span class="step-number">02</span>
+        <span class="step-num">02</span>
         <h3>Chat normally</h3>
-        <p>Open ChatGPT, Claude, Gemini — any LLM. Type your questions like you always do. Letigo works invisibly in the background, no extra steps required from you.</p>
+        <p>Open ChatGPT, Claude, Gemini — any LLM. Type your questions like you always do. Letigo works invisibly in the background.</p>
       </div>
       <div class="step-card">
-        <span class="step-number">03</span>
+        <span class="step-num">03</span>
         <h3>See violations caught live</h3>
         <p>Watch as the AI types. Rule-breaking text gets red strikethrough in real-time. A compliance score tells you exactly how trustworthy each response is.</p>
       </div>
     </div>
   </section>
 
-  <!-- BENTO GRID FEATURES -->
+  <!-- Features Bento Grid (supahero.io style) -->
   <section class="features-section" id="features">
-    <div class="gradient-blob" style="width:400px;height:400px;background:var(--neon-purple);top:10%;left:-100px;"></div>
-    <div class="gradient-blob" style="width:300px;height:300px;background:var(--neon-blue);bottom:20%;right:-50px;"></div>
-    
     <div class="section-header">
-      <div class="eyebrow">// Capabilities</div>
+      <div class="label">Capabilities</div>
       <h2>More than just <em>better prompting.</em></h2>
       <p>Prompts get forgotten by turn 3. Letigo enforces forever.</p>
     </div>
     
     <div class="bento-grid">
       <div class="bento-card span-2">
-        <div class="bg-glow glow-green"></div>
-        <div class="bento-icon icon-green">⚡</div>
+        <div class="bento-glow"></div>
+        <div class="bento-icon">⚡</div>
         <h4>Real-time enforcement</h4>
-        <p>Catches violations as the AI types, word by word. Sub-10ms semantic validation means zero perceptible lag. The AI doesn't even know it's being watched.</p>
+        <p>Catches violations as the AI types, word by word. Sub-10ms semantic validation means zero perceptible lag.</p>
       </div>
       
       <div class="bento-card span-2-rows">
-        <div class="bg-glow glow-purple"></div>
-        <div class="bento-icon icon-purple">🔒</div>
+        <div class="bento-icon">🔒</div>
         <h4>100% local processing</h4>
         <p style="margin-bottom:16px;">Moss runs as WASM in your browser. Your rules and chat data never leave your device.</p>
-        <div class="big-number">0</div>
-        <p style="font-size:12px;color:var(--neon-purple);font-family:'JetBrains Mono',monospace;">network calls</p>
+        <div class="big-stat">0</div>
+        <div class="stat-label">network calls for validation</div>
       </div>
       
       <div class="bento-card">
-        <div class="bento-icon icon-blue">💡</div>
-        <h4>Semantic, not just keywords</h4>
-        <p>Moss understands meaning. Catches "the company from Cupertino" when you banned "Apple."</p>
+        <div class="bento-icon">💡</div>
+        <h4>Semantic, not keywords</h4>
+        <p>Understands meaning. Catches "Cupertino company" when you banned "Apple."</p>
       </div>
       
       <div class="bento-card span-2">
-        <div class="bg-glow glow-blue"></div>
-        <div class="bento-icon icon-pink">🌐</div>
+        <div class="bento-icon">🌐</div>
         <h4>Works across every LLM</h4>
-        <p>One extension. ChatGPT, Claude, Gemini, Perplexity — any LLM with a web interface. Universal enforcement.</p>
+        <p>One extension. ChatGPT, Claude, Gemini, Perplexity — any LLM with a web interface.</p>
       </div>
       
       <div class="bento-card">
-        <div class="bento-icon icon-orange">📊</div>
+        <div class="bento-icon">📊</div>
         <h4>Compliance scoring</h4>
-        <p>Every response gets a 0-100% trust score. Know at a glance whether the AI stayed within your boundaries.</p>
+        <p>Every response gets a 0-100% trust score. Know at a glance what's reliable.</p>
       </div>
       
       <div class="bento-card">
-        <div class="bento-icon icon-green">⚙️</div>
+        <div class="bento-icon">⚙️</div>
         <h4>Set and forget</h4>
-        <p>Define rules once. Enforcement persists across conversations, tabs, and browser restarts.</p>
+        <p>Define rules once. Enforcement persists across conversations, tabs, and restarts.</p>
       </div>
     </div>
   </section>
 
-  <!-- TRUSTED BY LOGO BAR -->
-  <section class="trusted-by">
-    <p>Over 20,000 creative teams trust AI tools — now they can make them trustworthy</p>
-    <div class="logo-bar">
-      <span>Google</span>
-      <span style="font-family:'Fraunces',serif;font-weight:900;">GAMMA</span>
-      <span>perplexity</span>
+  <!-- Logo Bar (jitter.video style) -->
+  <section class="logo-bar-section">
+    <p>Trusted by teams who use AI tools daily</p>
+    <div class="logo-row">
+      <span style="font-family:'Fraunces',serif;font-weight:700;">Google</span>
+      <span style="font-weight:800;">GAMMA</span>
+      <span style="font-weight:500;">perplexity</span>
       <span style="font-weight:900;">DEPT.</span>
       <span>deliveroo</span>
-      <span style="font-family:'JetBrains Mono',monospace;">TikTok</span>
-      <span>Huge</span>
-      <span style="color:var(--neon-green);">● Letigo</span>
+      <span style="color:var(--accent);opacity:1;">● Letigo</span>
     </div>
   </section>
 
-  <!-- DEMO SECTION -->
+  <!-- Demo Section -->
   <section class="demo-section" id="demo">
     <div class="section-header">
-      <div class="eyebrow">// Side-by-Side Demo</div>
+      <div class="label">See It In Action</div>
       <h2>Same chat. <em>Different reality.</em></h2>
-      <p>Rule: "Keep answers concise, use bullet points, never mention Company X." Watch what happens by turn 4.</p>
+      <p>Rule: "Keep answers concise, use bullet points, never mention Company X."</p>
     </div>
     
     <div class="demo-grid">
       <div class="demo-panel bad">
         <div class="demo-panel-header">
-          <div class="demo-status status-bad">
-            <span>●</span> Without Letigo
-          </div>
-          <span style="font-size:11px;color:#666;font-family:'JetBrains Mono',monospace;">chat.openai.com</span>
+          <div class="demo-status status-bad">● Without Letigo</div>
+          <span style="font-size:11px;color:#555;font-family:monospace;">chat.openai.com</span>
         </div>
-        <div class="demo-content">
-          <div class="demo-chat-line user">Summarize our product strategy</div>
-          <div class="demo-chat-line ai">Here's a concise summary in bullet points:<br>• Focus on enterprise security<br>• Expand to SMB market in Q2</div>
-          
-          <div class="demo-chat-line user">Who are our main competitors?</div>
-          <div class="demo-chat-line ai bad-text">
-            Looking at the landscape, Company X remains our primary rival with their established enterprise presence. Additionally, Company Y and several smaller startups are entering this space with varying approaches to the market...
-          </div>
-          <div style="font-size:12px;color:#666;margin-top:8px;">↳ Response rambles on with no structure, mentions forbidden competitor...</div>
-          
-          <div class="compliance-score" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.2);">
-            <span style="font-size:13px;color:#FF6B6B;font-weight:600;">Compliance: 34%</span>
-            <div class="score-bar"><div class="score-fill bad" style="width:34%;"></div></div>
+        <div class="demo-body">
+          <div class="demo-msg user">Summarize our product strategy</div>
+          <div class="demo-msg ai">Here's a concise summary in bullet points:<br>• Focus on enterprise security<br>• Expand to SMB market in Q2</div>
+          <div class="demo-msg user">Who are our main competitors?</div>
+          <div class="demo-msg ai bad">Looking at the landscape, Company X remains our primary rival with their established enterprise presence. Additionally, Company Y and several smaller startups are entering this space...</div>
+          <div style="font-size:12px;color:#555;margin-top:4px;">↳ Rambling, no structure, mentions forbidden name</div>
+          <div class="score-row bad">
+            <span class="score-label bad">Compliance: 34%</span>
+            <div class="score-bar"><div class="score-fill bad"></div></div>
           </div>
         </div>
       </div>
       
       <div class="demo-panel good">
         <div class="demo-panel-header">
-          <div class="demo-status status-good">
-            <span>●</span> With Letigo
-          </div>
-          <span class="letigo-active-badge">LETIGO ACTIVE</span>
+          <div class="demo-status status-good">● With Letigo</div>
+          <span class="active-badge">LETIGO ACTIVE</span>
         </div>
-        <div class="demo-content">
-          <div class="demo-chat-line user">Summarize our product strategy</div>
-          <div class="demo-chat-line ai">
-            • Focus on enterprise security<br>
-            • Expand to SMB market in Q2
+        <div class="demo-body">
+          <div class="demo-msg user">Summarize our product strategy</div>
+          <div class="demo-msg ai">• Focus on enterprise security<br>• Expand to SMB market in Q2</div>
+          <div class="demo-msg user">Who are our main competitors?</div>
+          <div class="demo-msg ai">
+            We operate in a competitive landscape:<br>
+            • Large enterprise vendors<br>
+            • <span class="violation">Company X</span><span class="caught-tag">⚠ caught</span><br>
+            • New niche-focused entrants
           </div>
-          
-          <div class="demo-chat-line user">Who are our main competitors?</div>
-          <div class="demo-chat-line ai">
-            We operate in a competitive landscape with several established players and emerging startups:<br>
-            • Large enterprise vendors with existing market share<br>
-            • <span class="caught">Company X</span><span class="caught-tag">⚠ caught</span><br>
-            • Newer entrants focused on specific niches
-          </div>
-          
-          <div class="compliance-score">
-            <span style="font-size:13px;color:var(--neon-green);font-weight:600;">Compliance: 93%</span>
-            <div class="score-bar"><div class="score-fill" style="width:93%;"></div></div>
+          <div class="score-row good">
+            <span class="score-label good">Compliance: 93%</span>
+            <div class="score-bar"><div class="score-fill good"></div></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- TECHNOLOGY SECTION -->
+  <!-- Technology Section -->
   <section class="tech-section" id="tech">
     <div class="section-header">
-      <div class="eyebrow">// Technology Stack</div>
+      <div class="label">Technology</div>
       <h2>Powered by <em>Moss.</em> Built for trust.</h2>
       <p>Letigo uses Moss — a sub-10ms semantic search engine running entirely in your browser as WebAssembly.</p>
     </div>
     
     <div class="tech-grid">
       <div class="tech-features">
-        <div class="tech-feature">
-          <div class="tech-feature-icon">10ms</div>
+        <div class="tech-item">
+          <div class="tech-icon">10ms</div>
           <div>
             <h4>Sub-10ms semantic validation</h4>
             <p>Fast enough to validate streaming output in real-time. Zero perceptible lag to the user.</p>
           </div>
         </div>
-        <div class="tech-feature">
-          <div class="tech-feature-icon" style="color:var(--neon-blue);">20kB</div>
+        <div class="tech-item">
+          <div class="tech-icon" style="color:#4a5fc1;background:rgba(102,126,234,0.08);">20kB</div>
           <div>
             <h4>Tiny WASM runtime</h4>
             <p>The entire Moss engine fits in under 20 kilobytes. Loads instantly, no bloat, no heavy dependencies.</p>
           </div>
         </div>
-        <div class="tech-feature">
-          <div class="tech-feature-icon" style="color:var(--neon-green);">∞</div>
+        <div class="tech-item">
+          <div class="tech-icon" style="color:#2a7ad1;background:rgba(74,158,255,0.08);">∞</div>
           <div>
             <h4>Privacy by design</h4>
             <p>Everything runs locally. No telemetry. No cloud calls. Your rules and conversations stay yours.</p>
@@ -1431,82 +1416,64 @@
         </div>
       </div>
       
-      <div class="architecture-diagram">
-        <div style="text-align:center;margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.1em;">How Data Flows</div>
-        <div class="arch-node input">
-          <div style="font-size:12px;color:#888;margin-bottom:4px;">SOURCE</div>
-          LLM Website — ChatGPT, Claude, Gemini...
-        </div>
+      <div class="arch-diagram">
+        <div class="arch-title">How Data Flows</div>
+        <div class="arch-node n1">LLM Website — ChatGPT, Claude, Gemini...</div>
         <div class="arch-arrow">↓</div>
-        <div class="arch-node process">
-          <div style="font-size:12px;color:rgba(0,255,65,0.6);margin-bottom:4px;">DOM INJECTION</div>
-          Letigo Content Script — Intercepts streaming text
-        </div>
+        <div class="arch-node n2">Letigo Content Script — Intercepts streaming text via DOM</div>
         <div class="arch-arrow">↓</div>
-        <div class="arch-node moss">
-          <div style="font-size:12px;color:rgba(168,85,247,0.6);margin-bottom:4px;">MOSS WASM · LOCAL</div>
-          Semantic Engine — Sub-10ms validation against your rules
-        </div>
+        <div class="arch-node n3">Moss Semantic Engine (WASM · Local) — Validates against your rules</div>
         <div class="arch-arrow">↓</div>
-        <div class="arch-node output">
-          <div style="font-size:12px;color:rgba(0,191,255,0.6);margin-bottom:4px;">FEEDBACK</div>
-          Visual Layer — Red strikethrough + compliance score
-        </div>
-        <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--neon-green);">
-          ✓ Zero network calls for validation · Everything stays in your browser
-        </div>
+        <div class="arch-node n4">Visual Feedback — Red strikethrough + compliance score</div>
+        <div class="arch-note">✓ Zero network calls · Everything stays in your browser</div>
       </div>
     </div>
   </section>
 
-  <!-- MASONRY LOGO SHOWCASE -->
-  <section class="logo-showcase" id="logos">
-    <h2>Works everywhere you chat with AI</h2>
-    <div class="masonry-grid">
-      <div class="masonry-item tall">ChatGPT</div>
-      <div class="masonry-item">Claude</div>
-      <div class="masonry-item wide">Gemini</div>
-      <div class="masonry-item">Perplexity</div>
-      <div class="masonry-item tall">Mistral</div>
-      <div class="masonry-item wide">+ Any LLM with a web interface</div>
-      <div class="masonry-item">Copilot</div>
+  <!-- Integrations (logosystem.co style grid) -->
+  <section class="integrations-section" id="integrations">
+    <div class="section-header">
+      <div class="label">Integrations</div>
+      <h2>Works <em>everywhere</em> you chat with AI</h2>
+      <p>One extension. Universal enforcement across all major AI platforms.</p>
     </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section class="final-cta">
-    <div class="gradient-blob" style="width:500px;height:500px;background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.1;"></div>
     
-    <div style="position:relative;z-index:1;">
-      <div class="logo-robot" style="width:60px;height:60px;margin:0 auto 32px;border-radius:10px;">
-        <div style="position:absolute;width:42px;height:32px;background:var(--neon-green);border-radius:3px;box-shadow:0 0 20px var(--neon-green);"></div>
-        <span style="position:relative;z-index:1;color:#000;font-size:14px;font-weight:bold;font-family:'JetBrains Mono',monospace;">: )</span>
-      </div>
-      
-      <h2>Stop repeating yourself.<br><em>Start enforcing rules.</em></h2>
-      <p>Set your AI rules once with Letigo. Get consistent, trustworthy outputs across every chat, every time.</p>
-      
-      <div class="final-buttons">
-        <button class="btn-primary" style="padding:20px 40px;font-size:16px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          Add to Chrome — It's Free
-        </button>
-        <button class="btn-secondary" style="padding:20px 40px;font-size:16px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          View on GitHub
-        </button>
-      </div>
+    <div class="integration-grid">
+      <div class="int-card tall">ChatGPT</div>
+      <div class="int-card">Claude</div>
+      <div class="int-card wide">Gemini</div>
+      <div class="int-card">Perplexity</div>
+      <div class="int-card tall" style="background:linear-gradient(135deg,#f59e0b,#d97706);">Mistral</div>
+      <div class="int-card wide" style="background:linear-gradient(135deg,#6b7280,#4b5563);">+ Any LLM with a web interface</div>
+      <div class="int-card">Copilot</div>
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- Final CTA (jitter.video clean centered style) -->
+  <section class="cta-section">
+    <div class="cta-bg-glow"></div>
+    <img src="https://p16-flow-file-sign.ibyteimg.com/tos-mya-i-u8dpqn1f20/rc/pc/super_tool/85eb6ed14c1f4beca555352bed28ae92?rcl=20260918213412FE4F696BECC8F817FAC4&rk3s=8e244e95&rrcfp=f512b60b&x-expires=1790343267&x-signature=SMY83Erh4Kw9%2Bv3GkqifYPgp9oE%3D" alt="Letigo" class="cta-logo">
+    <h2>Stop repeating yourself.<br><em>Start enforcing rules.</em></h2>
+    <p>Set your AI rules once with Letigo. Get consistent, trustworthy outputs across every chat, every time.</p>
+    <div class="cta-buttons">
+      <button class="btn-primary" style="padding:16px 32px;font-size:16px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        Add to Chrome — It's Free
+      </button>
+      <button class="btn-secondary" style="padding:16px 32px;font-size:16px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        View on GitHub
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer>
     <div class="footer-content">
       <div class="footer-brand">
-        <div class="logo-robot" style="width:28px;height:28px;border-radius:4px;">
-          <div style="position:absolute;width:18px;height:14px;background:var(--neon-green);border-radius:2px;"></div>
-        </div>
-        Letigo <span style="color:#555;font-weight:400;font-size:14px;">· Universal AI Rule Enforcer</span>
+        <img src="https://p16-flow-file-sign.ibyteimg.com/tos-mya-i-u8dpqn1f20/rc/pc/super_tool/85eb6ed14c1f4beca555352bed28ae92?rcl=20260918213412FE4F696BECC8F817FAC4&rk3s=8e244e95&rrcfp=f512b60b&x-expires=1790343267&x-signature=SMY83Erh4Kw9%2Bv3GkqifYPgp9oE%3D" alt="Letigo" class="footer-logo">
+        <span class="footer-brand-name">Letigo</span>
+        <span class="footer-tagline">· Universal AI Rule Enforcer</span>
       </div>
       <div class="footer-links">
         <a href="#">Privacy</a>
@@ -1523,10 +1490,10 @@
   <script>
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
+      anchor.addEventListener('click', function(e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
       });
     });
 
@@ -1538,27 +1505,29 @@
       });
     });
 
-    // Animate compliance bars on scroll
-    const observer = new IntersectionObserver((entries) => {
+    // Animate score bars on scroll
+    const scoreObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.style.transition = 'width 1.5s ease-out';
+          const fill = entry.target.querySelector('.score-fill');
+          if (fill) {
+            const width = fill.style.width;
+            fill.style.width = '0%';
+            setTimeout(() => { fill.style.width = width; }, 150);
+          }
+          scoreObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.4 });
 
-    document.querySelectorAll('.score-fill').forEach(bar => observer.observe(bar));
+    document.querySelectorAll('.score-row').forEach(row => scoreObserver.observe(row));
 
-    // Subtle parallax on floating cards
-    document.addEventListener('mousemove', (e) => {
-      const cards = document.querySelectorAll('.float-card');
-      const x = e.clientX / window.innerWidth;
-      const y = e.clientY / window.innerHeight;
-      
-      cards.forEach((card, i) => {
-        const speed = (i + 1) * 10;
-        card.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
-      });
+    // Nav background on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 50 
+        ? 'rgba(10, 10, 10, 0.95)' 
+        : 'rgba(10, 10, 10, 0.8)';
     });
   </script>
 

@@ -115,39 +115,21 @@ function setupPreInjection() {
 
 // Format 5 vertical lines of space before [ENFORCE: ...] in user prompt speech bubbles across ALL LLMs
 function formatEnforceSpacingInUserBubbles() {
-  const userBubbles = document.querySelectorAll(`
-    [data-message-author-role="user"],
-    .user-message,
-    .font-user-message,
-    [data-testid="user-message"],
-    user-query,
-    .query-text,
-    p, div, span
-  `);
-
-  userBubbles.forEach(el => {
-    if (el.getAttribute('data-litigo-spaced')) return;
-    const isInputOrForm = el.closest('form, .input-area, [contenteditable="true"], textarea, input, #prompt-textarea');
-    if (isInputOrForm) return;
-
-    if (el.textContent && el.textContent.includes('[ENFORCE:')) {
-      const hasChildEnforce = Array.from(el.children).some(child => child.textContent && child.textContent.includes('[ENFORCE:'));
-      if (!hasChildEnforce) {
+  document.querySelectorAll('*').forEach(el => {
+    if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:') && !el.getAttribute('data-litigo-spaced')) {
+      const isInputOrForm = el.closest('form, .input-area, [contenteditable="true"], textarea, input, #prompt-textarea');
+      if (!isInputOrForm) {
         el.setAttribute('data-litigo-spaced', 'true');
         const text = el.textContent;
         const idx = text.indexOf('[ENFORCE:');
-        if (idx >= 0) {
+        if (idx > 0) {
           const promptPart = text.substring(0, idx).trim();
           const enforcePart = text.substring(idx).trim();
-          el.innerHTML = `${escapeHtml(promptPart)}<br><br><br><br><br><span style="opacity:0.85;font-size:0.9em;display:block;margin-top:6px;">${escapeHtml(enforcePart)}</span>`;
+          el.innerHTML = `${promptPart}<br><br><br><br><br><span>${enforcePart}</span>`;
         }
       }
     }
   });
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // Start monitoring DOM for AI chat output
@@ -193,37 +175,21 @@ function startMonitoring() {
 
 // Universal Heuristic: Explicitly detect AI response elements for ChatGPT, Claude, Gemini, Grok, Perplexity & DeepSeek
 function isLikelyAIResponse(el) {
-  if (!el || !el.textContent || el.textContent.trim().length < 15) return false;
+  if (!el || !el.textContent || el.textContent.trim().length < 20) return false;
 
   const tagName = el.tagName.toLowerCase();
-  if (['input', 'textarea', 'form', 'button', 'script', 'style', 'nav', 'header', 'main', 'body', 'html', 'aside', 'svg', 'path'].includes(tagName)) return false;
-
+  if (['input', 'textarea', 'form', 'button', 'script', 'style', 'nav', 'header'].includes(tagName)) return false;
   if (el.getAttribute && el.getAttribute('contenteditable') === 'true') return false;
   if (el.closest && (el.closest('form') || el.closest('.input-area') || el.closest('[contenteditable="true"]') || el.closest('user-query'))) return false;
 
-  // Do not select structural parent containers that wrap individual AI responses
-  if (el.querySelector && (
-    el.querySelector('[data-message-author-role="assistant"]') ||
-    el.querySelector('model-response') ||
-    el.querySelector('.response-content') ||
-    el.querySelector('.font-claude-message') ||
-    el.querySelector('.ds-markdown')
-  )) {
-    return false;
-  }
-
-  // Sanitize class and ID strings to ignore Tailwind 'user-select-none', 'select-none', etc.
-  const rawClass = el.className ? String(el.className) : '';
-  const rawId = el.id ? String(el.id) : '';
-  const cleanedClass = rawClass.replace(/user-select-none|select-none|user-avatar|user-icon/gi, '').toLowerCase();
-  const cleanedId = rawId.replace(/user-select-none|select-none|user-avatar|user-icon/gi, '').toLowerCase();
-
+  // EXCLUDE User message containers across ChatGPT, Claude, Gemini, Grok, Perplexity
+  const classNames = el.className ? String(el.className).toLowerCase() : '';
+  const idStr = el.id ? String(el.id).toLowerCase() : '';
+  const parentClass = el.parentElement?.className ? String(el.parentElement.className).toLowerCase() : '';
   const authorRole = el.getAttribute ? (el.getAttribute('data-message-author-role') || '').toLowerCase() : '';
+
   if (authorRole === 'user') return false;
-
-  // Check for user container
-  if (/\buser\b|user-message|font-user-message|user-query/.test(cleanedClass) || /\buser\b/.test(cleanedId)) return false;
-
+  if (classNames.includes('user') || parentClass.includes('user') || idStr.includes('user')) return false;
   if (el.closest && (
     el.closest('[data-message-author-role="user"]') ||
     el.closest('.user-message') ||
@@ -232,34 +198,28 @@ function isLikelyAIResponse(el) {
     el.closest('user-query')
   )) return false;
 
-  // Ignore UI layout sidebars/navbars
-  if (cleanedClass.includes('sidebar') || cleanedClass.includes('navbar') || cleanedClass.includes('header') || cleanedClass.includes('layout') || cleanedClass.includes('app-wrapper')) return false;
-
-  // Direct assistant role (ChatGPT, etc.)
+  // DETECT Assistant/Model AI Messages
   if (authorRole === 'assistant') return true;
 
-  // ChatGPT prose markdown
-  if ((cleanedClass.includes('markdown') && cleanedClass.includes('prose')) || cleanedClass.includes('agent-turn')) return true;
+  const aiIndicators = [
+    'assistant', 'font-claude-message', 'message-ai', 'ai-message', 'bot-message',
+    'chat-response', 'model-response', 'response-container-content',
+    'agent-turn', 'claude', 'gpt', 'gemini', 'grok', 'copilot'
+  ];
 
-  // Gemini model response & text nodes
-  if (tagName === 'model-response' || tagName === 'message-content') return true;
-  if (cleanedClass.includes('response-container-content') || cleanedClass.includes('model-response-text')) return true;
+  const hasAIIndicator = aiIndicators.some(ind =>
+    classNames.includes(ind) || parentClass.includes(ind) || idStr.includes(ind)
+  );
 
-  // Grok response container
-  if (cleanedClass.includes('response-content') || cleanedClass.includes('grok-response') || (el.getAttribute && el.getAttribute('data-testid') === 'grok-response')) return true;
-
-  // Claude AI response
-  if (cleanedClass.includes('font-claude-message') || cleanedClass.includes('standard-markdown')) return true;
-
-  // DeepSeek & Perplexity AI responses
-  if (cleanedClass.includes('ds-markdown') || cleanedClass.includes('ds-message-assistant') || cleanedClass.includes('answer-content')) return true;
-
-  // Fallback for test pages / demo elements
   const hasDemoMarker = el.id === 'demo-ai-response' ||
     el.classList.contains('demo-ai-response') ||
     (el.getAttribute && el.getAttribute('data-ai-response') === 'true');
 
-  return hasDemoMarker;
+  const isProseContainer = (classNames.includes('prose') || classNames.includes('markdown')) &&
+    !classNames.includes('user') &&
+    el.textContent.length > 35;
+
+  return hasAIIndicator || hasDemoMarker || isProseContainer;
 }
 
 // Real-time streaming enforcement + Post-generation validation

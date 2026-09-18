@@ -5,13 +5,7 @@
   "description": "Set rules once. Enforce them everywhere. Litigo validates AI chat outputs against your rules in real-time using Moss semantic search, locally in your browser.",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": [
-    "https://chat.openai.com/*",
-    "https://chatgpt.com/*",
-    "https://claude.ai/*",
-    "https://gemini.google.com/*",
-    "https://www.perplexity.ai/*",
-    "https://chat.deepseek.com/*",
-    "https://*.hidevs.xyz/*"
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -27,13 +21,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://chat.openai.com/*",
-        "https://chatgpt.com/*",
-        "https://claude.ai/*",
-        "https://gemini.google.com/*",
-        "https://www.perplexity.ai/*",
-        "https://chat.deepseek.com/*",
-        "https://*.hidevs.xyz/*"
+        "<all_urls>"
       ],
       "js": ["moss.js", "content.js"],
       "css": ["content.css"],

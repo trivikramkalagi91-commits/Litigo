@@ -92,6 +92,22 @@ function loadRules() {
 }
 
 function renderRules() {
+  const sectionLabel = document.querySelector('.section-label');
+  if (sectionLabel && sectionLabel.textContent.includes('Your Rules')) {
+    sectionLabel.style.display = 'flex';
+    sectionLabel.style.justifyContent = 'space-between';
+    sectionLabel.style.alignItems = 'center';
+    sectionLabel.innerHTML = `<span>Your Rules</span>${rules.length > 0 ? '<span id="clearRulesBtn" style="cursor:pointer;color:#FF6B6B;font-weight:600;font-size:11px;" title="Clear all active rules">Clear All</span>' : ''}`;
+
+    const clearBtn = document.getElementById('clearRulesBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        rules = [];
+        saveRules();
+      });
+    }
+  }
+
   const list = document.getElementById("rulesList");
   list.innerHTML = "";
 

@@ -35,9 +35,8 @@ chrome.runtime.onMessage.addListener((message) => {
 
 // ============================================================
 // DELIVERABLE 1 — PRE-INJECTION SYSTEM
-// Silently appends active rules to EVERY user prompt before sending
-// Format: "[ENFORCE: rule1; rule2; rule3]" (invisible to user)
-// Works reliably on ChatGPT, Claude, Gemini, Perplexity, DeepSeek
+// Appends active rules to EVERY user prompt with 5 lines of space
+// Format: prompt + 5 lines space + "[ENFORCE: rule1; rule2; rule3]"
 // ============================================================
 function setupPreInjection() {
   const getActiveRuleString = () => {
@@ -70,21 +69,23 @@ function setupPreInjection() {
     const inputEl = findActiveInput();
     if (!inputEl) return;
 
+    const fiveLinesSpacing = '\n\n\n\n\n';
+
     if (inputEl.tagName === 'TEXTAREA' || inputEl.tagName === 'INPUT') {
       if (!inputEl.value.includes('[ENFORCE:')) {
         const original = inputEl.value;
-        inputEl.value = `${original}\n\n${ruleString}`;
+        inputEl.value = `${original}${fiveLinesSpacing}${ruleString}`;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-        console.log("[Litigo] Pre-injected enforcement prompt into textarea/input:", ruleString);
+        console.log("[Litigo] Pre-injected enforcement prompt with 5 lines spacing:", ruleString);
       }
     } else if (inputEl.getAttribute('contenteditable') === 'true' || inputEl.classList.contains('ProseMirror')) {
       if (!inputEl.textContent.includes('[ENFORCE:')) {
         const p = inputEl.querySelector('p') || inputEl;
-        p.textContent = `${p.textContent}\n\n${ruleString}`;
+        p.textContent = `${p.textContent}${fiveLinesSpacing}${ruleString}`;
         inputEl.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
         inputEl.dispatchEvent(new Event('change', { bubbles: true }));
-        console.log("[Litigo] Pre-injected enforcement prompt into rich-text contenteditable:", ruleString);
+        console.log("[Litigo] Pre-injected enforcement prompt into rich-text with 5 lines spacing:", ruleString);
       }
     }
   };
@@ -109,23 +110,10 @@ function setupPreInjection() {
   }, true);
 }
 
-// Clean [ENFORCE: ...] text ONLY inside static user chat history bubbles, NEVER inside active input boxes
-function hideEnforceTextFromUserBubbles() {
-  document.querySelectorAll('*').forEach(el => {
-    if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:')) {
-      const isInputOrForm = el.closest('form, .input-area, [contenteditable="true"], textarea, input, #prompt-textarea');
-      if (!isInputOrForm) {
-        el.textContent = el.textContent.replace(/\[ENFORCE:.*?\]/g, '').trim();
-      }
-    }
-  });
-}
-
 // Start monitoring DOM for AI chat output
 function startMonitoring() {
   const observer = new MutationObserver((mutations) => {
     if (!extensionEnabled) return;
-    hideEnforceTextFromUserBubbles();
 
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {

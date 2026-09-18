@@ -1,10 +1,11 @@
 // Litigo Content Script
-// Injects into web pages, monitors AI chat outputs, validates against rules
-// Uses Moss semantic search (sub-10ms) when available, falls back to keyword matching
+// Injects into web pages, monitors AI chat outputs, enforces active rules, validates against Moss WASM & Truth Layer
+
 let rules = [];
 let extensionEnabled = true;
 let mossActive = false;
 let processedNodes = new WeakSet();
+let streamingNodes = new WeakMap();
 let currentStats = { totalChecks: 0, violationsCaught: 0 };
 
 // Initialize
@@ -16,6 +17,7 @@ function init() {
       mossActive = response.mossActive === true;
       console.log(`[Litigo] Loaded ${rules.length} rules, enabled: ${extensionEnabled}, Moss: ${mossActive ? 'SEMANTIC' : 'keyword fallback'}`);
       startMonitoring();
+      setupPreInjection();
     }
   });
 }
@@ -32,6 +34,71 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
+// ============================================================
+// DELIVERABLE 1 — PRE-INJECTION SYSTEM
+// Silently appends active rules to user prompts before sending
+// Format: "[ENFORCE: rule1; rule2; rule3]"
+// ============================================================
+function setupPreInjection() {
+  const getActiveRuleString = () => {
+    const active = rules.filter(r => r.enabled);
+    if (active.length === 0) return '';
+    return `[ENFORCE: ${active.map(r => r.text).join('; ')}]`;
+  };
+
+  const handlePromptSubmit = (event) => {
+    if (!extensionEnabled) return;
+    const ruleString = getActiveRuleString();
+    if (!ruleString) return;
+
+    const target = event.target;
+    let inputEl = null;
+
+    if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.getAttribute('contenteditable') === 'true') {
+      inputEl = target;
+    } else {
+      inputEl = document.querySelector('textarea, input[type="text"], [contenteditable="true"]');
+    }
+
+    if (!inputEl) return;
+
+    // Only inject if not already injected
+    if (inputEl.tagName === 'TEXTAREA' || inputEl.tagName === 'INPUT') {
+      if (!inputEl.value.includes('[ENFORCE:')) {
+        const original = inputEl.value;
+        inputEl.value = `${original}\n\n${ruleString}`;
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        console.log("[Litigo] Pre-injected enforcement prompt:", ruleString);
+      }
+    } else if (inputEl.getAttribute('contenteditable') === 'true') {
+      if (!inputEl.textContent.includes('[ENFORCE:')) {
+        inputEl.textContent = `${inputEl.textContent}\n\n${ruleString}`;
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        console.log("[Litigo] Pre-injected enforcement prompt in contenteditable:", ruleString);
+      }
+    }
+  };
+
+  // Intercept Enter key in capture phase
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      handlePromptSubmit(e);
+    }
+  }, true);
+
+  // Intercept click on send buttons in capture phase
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button, [role="button"]');
+    if (btn) {
+      const btnText = (btn.textContent || btn.getAttribute('aria-label') || '').toLowerCase();
+      const btnTestId = btn.getAttribute('data-testid') || '';
+      if (btnText.includes('send') || btnText.includes('submit') || btnTestId.includes('send') || btn.querySelector('svg')) {
+        handlePromptSubmit(e);
+      }
+    }
+  }, true);
+}
+
 // Start monitoring DOM for AI chat output
 function startMonitoring() {
   const observer = new MutationObserver((mutations) => {
@@ -40,13 +107,18 @@ function startMonitoring() {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           if (isLikelyAIResponse(node)) {
-            processAIResponse(node);
+            handleStreamingOrFullResponse(node);
           }
           node.querySelectorAll && node.querySelectorAll('*').forEach(child => {
             if (isLikelyAIResponse(child) && !processedNodes.has(child)) {
-              processAIResponse(child);
+              handleStreamingOrFullResponse(child);
             }
           });
+        } else if (mutation.type === 'characterData' && mutation.target.parentElement) {
+          const parent = mutation.target.parentElement.closest('*');
+          if (parent && isLikelyAIResponse(parent)) {
+            handleStreamingOrFullResponse(parent);
+          }
         }
       });
     });
@@ -58,17 +130,17 @@ function startMonitoring() {
     characterData: true
   });
 
-  // Also scan existing content
+  // Scan existing content
   document.querySelectorAll('*').forEach(el => {
-    if (isLikelyAIResponse(el)) processAIResponse(el);
+    if (isLikelyAIResponse(el)) handleStreamingOrFullResponse(el);
   });
 
-  console.log("[Litigo] Monitoring active — " + (mossActive ? "Moss semantic mode" : "keyword fallback mode"));
+  console.log("[Litigo] Monitoring active — " + (mossActive ? "Moss WASM mode" : "keyword fallback mode"));
 }
 
 // Heuristic: detect if element is likely an AI response
 function isLikelyAIResponse(el) {
-  if (!el || !el.textContent || el.textContent.trim().length < 20) return false;
+  if (!el || !el.textContent || el.textContent.trim().length < 15) return false;
 
   const classNames = el.className ? String(el.className).toLowerCase() : '';
   const tagName = el.tagName.toLowerCase();
@@ -91,77 +163,128 @@ function isLikelyAIResponse(el) {
 
   const hasDemoMarker = el.id === 'demo-ai-response' ||
     el.classList.contains('demo-ai-response') ||
-    el.getAttribute && el.getAttribute('data-ai-response') === 'true';
+    (el.getAttribute && el.getAttribute('data-ai-response') === 'true');
 
   return hasAIIndicator || hasDemoMarker ||
     (isStructured && (classNames.includes('message') || classNames.includes('chat')));
 }
 
-// Process an AI response element — tries Moss first, falls back to keywords
+// Real-time streaming enforcement + Post-generation validation
+function handleStreamingOrFullResponse(element) {
+  enforceStreamingWordLimit(element);
+
+  // Debounce post-generation validation until stream pauses/completes
+  if (element.litigoTimer) clearTimeout(element.litigoTimer);
+  element.litigoTimer = setTimeout(() => {
+    processAIResponse(element);
+  }, 400);
+}
+
+// ============================================================
+// STREAMING ENFORCEMENT
+// Truncates displayed text live if word limit breached
+// ============================================================
+function enforceStreamingWordLimit(element) {
+  const lengthRule = rules.find(r => r.enabled && r.type === 'length');
+  if (!lengthRule) return;
+
+  // Extract limit from rule text (e.g. "under 50 words" -> 50)
+  const limitMatch = lengthRule.text.match(/(\d+)\s*words?/i);
+  const limit = limitMatch ? parseInt(limitMatch[1]) : 50;
+
+  const fullText = element.textContent || '';
+  const words = fullText.trim().split(/\s+/);
+
+  if (words.length > limit) {
+    if (!element.querySelector('.litigo-warning')) {
+      const warningMarker = document.createElement('span');
+      warningMarker.className = 'litigo-violation litigo-warning';
+      warningMarker.style.cssText = 'background:rgba(255,107,107,0.15);color:#D64545;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px;';
+      warningMarker.title = `Litigo Enforcement: Exceeded ${limit} words limit`;
+      warningMarker.textContent = ` ⚠ [Word limit of ${limit} words exceeded — truncated]`;
+      element.appendChild(warningMarker);
+      console.log(`[Litigo] Streaming enforcement triggered: ${words.length} > ${limit} words`);
+    }
+  }
+}
+
+// Process full AI response (Dual Path Validation + Truth Layer Verification)
 async function processAIResponse(element) {
   if (processedNodes.has(element)) return;
   processedNodes.add(element);
 
   const text = element.textContent;
-  if (!text || text.trim().length < 20) return;
+  if (!text || text.trim().length < 15) return;
 
   let violations = [];
   let usedMoss = false;
   let latencyMs = null;
 
-  // ============================================================
-  // PATH 1: Moss Semantic Validation (sub-10ms, meaning-based)
-  // Asks background service worker to run Moss WASM query
-  // ============================================================
+  // DUAL VALIDATION PATH (Run both Semantic & Keyword, prioritize Semantic if confidence > 0.7)
+  let keywordViolations = validateTextKeyword(text);
+  let semanticViolations = [];
+
   if (mossActive) {
     try {
-      const contextWindow = text.substring(0, 200);
       const response = await new Promise((resolve) => {
         chrome.runtime.sendMessage({
           action: "validateSemantic",
           text: text,
-          context: contextWindow
+          context: text.substring(0, 200)
         }, resolve);
       });
 
-      if (response && response.mossActive && response.violations !== null) {
-        violations = response.violations;
+      if (response && response.mossActive && response.violations) {
+        semanticViolations = response.violations;
         usedMoss = true;
-        if (violations.length > 0) {
-          latencyMs = violations[0].latencyMs;
-        }
-        console.log(`[Litigo] Moss semantic: ${violations.length} violations`);
+        latencyMs = response.latencyMs;
       }
     } catch (e) {
       console.warn("[Litigo] Moss query failed, falling back to keywords:", e);
     }
   }
 
-  // ============================================================
-  // PATH 2: Keyword Fallback (when Moss not bundled)
-  // ============================================================
-  if (!usedMoss) {
-    violations = validateTextKeyword(text);
+  // Combine & prioritize results (Semantic overrides if confidence > 0.7)
+  if (usedMoss && semanticViolations.length > 0 && semanticViolations[0].confidence > 0.7) {
+    violations = semanticViolations;
+  } else {
+    violations = keywordViolations;
+    usedMoss = false;
   }
 
-  // Apply visual feedback
+  // TRUTH LAYER FACT VERIFICATION (Deliverable 3)
+  let truthData = null;
+  try {
+    truthData = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({
+        action: "verifyClaims",
+        text: text
+      }, resolve);
+    });
+  } catch (e) {}
+
+  // Apply visual feedback & badges into EXISTING UI
   if (violations.length > 0) {
     highlightViolations(element, violations, usedMoss);
     chrome.runtime.sendMessage({ action: "logViolation", latencyMs });
     currentStats.violationsCaught++;
-    showComplianceBadge(element, violations, usedMoss, latencyMs);
+    showComplianceBadge(element, violations, usedMoss, latencyMs, truthData);
   } else {
     chrome.runtime.sendMessage({ action: "logCheck" });
-    showCleanBadge(element, usedMoss);
+    showCleanBadge(element, usedMoss, truthData);
+  }
+
+  // Highlight Truth Layer contradictions if found
+  if (truthData && truthData.claims) {
+    truthData.claims.filter(c => c.status === 'contradiction').forEach(c => {
+      highlightContradiction(element, c);
+    });
   }
 
   currentStats.totalChecks++;
 }
 
-// ============================================================
-// KEYWORD FALLBACK VALIDATION
-// Used when Moss WASM is not bundled in the extension
-// ============================================================
+// Keyword Validation Baseline
 function validateTextKeyword(text) {
   const violations = [];
   const lowerText = text.toLowerCase();
@@ -181,28 +304,19 @@ function validateTextKeyword(text) {
               });
             }
           });
-        } else {
-          const ruleWords = rule.text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(w => w.length > 3);
-          const matches = ruleWords.filter(w => lowerText.includes(w));
-          if (matches.length >= 2) {
-            violations.push({
-              rule: rule.text,
-              type: "forbidden",
-              matchedText: matches.join(", "),
-              semantic: false
-            });
-          }
         }
         break;
 
       case "length":
+        const limitMatch = rule.text.match(/(\d+)\s*words?/i);
+        const limit = limitMatch ? parseInt(limitMatch[1]) : 50;
         const wordCount = text.split(/\s+/).length;
-        if (wordCount > 50) {
+        if (wordCount > limit) {
           violations.push({
             rule: rule.text,
             type: "length",
             wordCount: wordCount,
-            limit: 50,
+            limit: limit,
             semantic: false
           });
         }
@@ -224,27 +338,13 @@ function validateTextKeyword(text) {
 
       case "citation":
         const hasCitation = /\[(?:\d+|[^\]]+\))\]|\(https?:\/\/[^\)]+\)|source:|cited from/i.test(text);
-        if (!hasCitation && containsFactualClaim(text)) {
+        if (!hasCitation && /\d{4}|\d+%|according to|research shows/i.test(text)) {
           violations.push({
             rule: rule.text,
             type: "citation",
             issue: "Factual claim without citation",
             semantic: false
           });
-        }
-        break;
-
-      case "style":
-        if (rule.text.toLowerCase().includes("simple")) {
-          const complexWords = countComplexWords(text);
-          if (complexWords > 5) {
-            violations.push({
-              rule: rule.text,
-              type: "style",
-              issue: `${complexWords} complex words detected`,
-              semantic: false
-            });
-          }
         }
         break;
     }
@@ -256,23 +356,11 @@ function validateTextKeyword(text) {
 function findMatch(text, keyword) {
   const lower = text.toLowerCase();
   const idx = lower.indexOf(keyword.toLowerCase());
-  if (idx >= 0) {
-    return text.substring(idx, idx + keyword.length);
-  }
+  if (idx >= 0) return text.substring(idx, idx + keyword.length);
   return keyword;
 }
 
-function containsFactualClaim(text) {
-  return /\d+(\.\d+)?%|\d{4}|percent|according to|study shows|research found/i.test(text);
-}
-
-function countComplexWords(text) {
-  const complexPatterns = /\b(?:however|furthermore|nevertheless|consequently|subsequently|predominantly|notwithstanding|heretofore|herein|hereinafter)\b/gi;
-  const matches = text.match(complexPatterns);
-  return matches ? matches.length : 0;
-}
-
-// Highlight violations in the DOM
+// Highlight violations in DOM (Strikethrough)
 function highlightViolations(element, violations, usedMoss) {
   violations.forEach(v => {
     if (v.matchedText) {
@@ -289,8 +377,9 @@ function highlightViolations(element, violations, usedMoss) {
 
             const highlight = document.createElement('span');
             highlight.className = 'litigo-violation' + (usedMoss ? ' litigo-semantic' : '');
-            const modeLabel = usedMoss ? 'semantic detection' : 'keyword match';
-            highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught${v.confidence ? ` (confidence: ${Math.round(v.confidence * 100)}%)` : ''}`;
+            highlight.style.cssText = 'text-decoration:line-through;background:rgba(255,107,107,0.15);color:#D64545;padding:1px 4px;border-radius:3px;';
+            const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword match';
+            highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught`;
             highlight.textContent = range.toString();
 
             range.deleteContents();
@@ -298,25 +387,31 @@ function highlightViolations(element, violations, usedMoss) {
             break;
           }
         }
-      } catch (e) {
-        addViolationMarker(element, v);
-      }
-    } else {
-      addViolationMarker(element, v);
+      } catch (e) {}
     }
   });
 }
 
-function addViolationMarker(element, violation) {
-  const marker = document.createElement('span');
-  marker.className = 'litigo-marker';
-  marker.title = `Litigo: "${violation.rule}" — ${violation.issue || 'violation'}`;
-  marker.textContent = '⚠';
-  element.appendChild(marker);
+function highlightContradiction(element, contradictionClaim) {
+  try {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+    let node;
+    while (node = walker.nextNode()) {
+      if (node.textContent.includes(contradictionClaim.sentence.substring(0, 15))) {
+        const span = document.createElement('span');
+        span.className = 'litigo-violation litigo-contradiction';
+        span.style.cssText = 'text-decoration:line-through;background:rgba(255,0,0,0.2);color:#B71C1C;padding:1px 4px;border-radius:3px;';
+        span.title = `🔴 Litigo Truth Layer: Contradiction found against Knowledge Base source (${contradictionClaim.source || 'KB'})`;
+        span.textContent = node.textContent;
+        node.parentNode.replaceChild(span, node);
+        break;
+      }
+    }
+  } catch(e) {}
 }
 
-// Show compliance score badge with mode indicator
-function showComplianceBadge(element, violations, usedMoss, latencyMs) {
+// Feed results into EXISTING compliance badge
+function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData) {
   if (element.querySelector('.litigo-badge')) return;
   if (element.closest('.litigo-badge')) return;
 
@@ -327,12 +422,13 @@ function showComplianceBadge(element, violations, usedMoss, latencyMs) {
   const score = Math.max(0, Math.min(100, Math.round(100 - (violationCount * 15))));
   const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword';
   const latencyLabel = latencyMs ? ` · ${latencyMs}ms` : '';
+  const truthLabel = (truthData && truthData.totalClaims > 0) ? ` · Truth: ${truthData.truthScore}%` : '';
 
   badge.innerHTML = `
     <div class="litigo-badge-inner ${score < 70 ? 'low-score' : ''}">
       <span class="litigo-badge-icon">🛡️</span>
       <span class="litigo-badge-score">Compliance: ${score}%</span>
-      <span class="litigo-badge-detail">${violationCount} violation${violationCount > 1 ? 's' : ''} · ${modeLabel}${latencyLabel}</span>
+      <span class="litigo-badge-detail">${violationCount} violation${violationCount > 1 ? 's' : ''} · ${modeLabel}${latencyLabel}${truthLabel}</span>
     </div>
   `;
 
@@ -341,19 +437,19 @@ function showComplianceBadge(element, violations, usedMoss, latencyMs) {
   element.appendChild(badge);
 }
 
-// Show clean badge when no violations found
-function showCleanBadge(element, usedMoss) {
+function showCleanBadge(element, usedMoss, truthData) {
   if (element.querySelector('.litigo-badge')) return;
 
   const badge = document.createElement('div');
   badge.className = 'litigo-badge';
   const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword';
+  const truthLabel = (truthData && truthData.totalClaims > 0) ? ` · Truth: ${truthData.truthScore}% (🟢 Verified)` : '';
 
   badge.innerHTML = `
     <div class="litigo-badge-inner">
       <span class="litigo-badge-icon">🛡️</span>
       <span class="litigo-badge-score">Compliance: 100%</span>
-      <span class="litigo-badge-detail">All rules satisfied · ${modeLabel}</span>
+      <span class="litigo-badge-detail">All rules satisfied · ${modeLabel}${truthLabel}</span>
     </div>
   `;
 

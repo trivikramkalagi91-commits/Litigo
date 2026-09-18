@@ -1,4 +1,4 @@
-// Letigo Popup Script
+// Litigo Popup Script
 // Works both as Chrome extension popup and standalone test page
 
 const DEFAULT_RULES = [
@@ -21,7 +21,7 @@ const storage = {
     } else {
       const data = {};
       try {
-        const stored = localStorage.getItem('letigo_' + key);
+        const stored = localStorage.getItem('litigo_' + key);
         data[key] = stored ? JSON.parse(stored) : undefined;
       } catch(e) { data[key] = undefined; }
       callback(data);
@@ -32,7 +32,7 @@ const storage = {
       chrome.storage.local.set(obj, callback);
     } else {
       Object.keys(obj).forEach(key => {
-        localStorage.setItem('letigo_' + key, JSON.stringify(obj[key]));
+        localStorage.setItem('litigo_' + key, JSON.stringify(obj[key]));
       });
       callback && callback();
     }

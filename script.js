@@ -1,5 +1,5 @@
 // ============================================
-// Letigo — AI-Generated Style Frontend
+// Litigo — AI-Generated Style Frontend
 // Merged design elements from:
 // supahero.io, bestfreefonts.com, logosystem.co
 // cosmos.so, pafolios.com, jitter.video, recent.design
@@ -72,7 +72,7 @@ document.querySelectorAll('.bento-card').forEach(card => {
 });
 
 // Console easter egg
-console.log('%c🤖 Letigo', 'font-size: 28px; font-weight: bold; color: #00FF41;');
+console.log('%c🤖 Litigo', 'font-size: 28px; font-weight: bold; color: #00FF41;');
 console.log('%c╔══════════════════════════════════╗', 'color: #A855F7;');
 console.log('%c║  Universal AI Rule Enforcer      ║', 'color: #A855F7;');
 console.log('%c║  Powered by Moss · Sub-10ms      ║', 'color: #A855F7;');

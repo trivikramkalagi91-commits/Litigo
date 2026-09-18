@@ -1,10 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Letigo — AI Rule Enforcer",
+  "name": "Litigo — AI Rule Enforcer",
   "version": "1.0.0",
-  "description": "Set rules once. Enforce them everywhere. Letigo validates AI chat outputs against your rules in real-time, locally in your browser.",
+  "description": "Set rules once. Enforce them everywhere. Litigo validates AI chat outputs against your rules in real-time using Moss semantic search, locally in your browser.",
   "permissions": ["storage", "activeTab", "scripting"],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://www.perplexity.ai/*",
+    "https://chat.deepseek.com/*",
+    "https://*.hidevs.xyz/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -18,8 +25,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://www.perplexity.ai/*",
+        "https://chat.deepseek.com/*",
+        "https://*.hidevs.xyz/*"
+      ],
+      "js": ["moss.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }
@@ -31,8 +45,11 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["content.css"],
+      "resources": ["content.css", "moss.wasm"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
 }

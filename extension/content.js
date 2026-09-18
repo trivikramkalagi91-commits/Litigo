@@ -1,8 +1,9 @@
-// Letigo Content Script
+// Litigo Content Script
 // Injects into web pages, monitors AI chat outputs, validates against rules
-
+// Uses Moss semantic search (sub-10ms) when available, falls back to keyword matching
 let rules = [];
 let extensionEnabled = true;
+let mossActive = false;
 let processedNodes = new WeakSet();
 let currentStats = { totalChecks: 0, violationsCaught: 0 };
 
@@ -12,7 +13,8 @@ function init() {
     if (response) {
       rules = response.rules || [];
       extensionEnabled = response.enabled !== false;
-      console.log("[Letigo] Loaded", rules.length, "rules, enabled:", extensionEnabled);
+      mossActive = response.mossActive === true;
+      console.log(`[Litigo] Loaded ${rules.length} rules, enabled: ${extensionEnabled}, Moss: ${mossActive ? 'SEMANTIC' : 'keyword fallback'}`);
       startMonitoring();
     }
   });
@@ -22,27 +24,24 @@ function init() {
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "rulesUpdated") {
     rules = message.rules || [];
-    console.log("[Letigo] Rules updated:", rules.length);
+    if (message.mossActive !== undefined) mossActive = message.mossActive;
+    console.log(`[Litigo] Rules updated: ${rules.length}, Moss: ${mossActive}`);
   } else if (message.action === "enabledUpdated") {
     extensionEnabled = message.enabled;
-    console.log("[Letigo] Enabled:", extensionEnabled);
+    console.log("[Litigo] Enabled:", extensionEnabled);
   }
 });
 
 // Start monitoring DOM for AI chat output
 function startMonitoring() {
-  // Common AI chat selectors (ChatGPT, Claude, Gemini, etc.)
   const observer = new MutationObserver((mutations) => {
     if (!extensionEnabled) return;
-
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
-          // Check if this looks like an AI response container
           if (isLikelyAIResponse(node)) {
             processAIResponse(node);
           }
-          // Also check children
           node.querySelectorAll && node.querySelectorAll('*').forEach(child => {
             if (isLikelyAIResponse(child) && !processedNodes.has(child)) {
               processAIResponse(child);
@@ -64,67 +63,106 @@ function startMonitoring() {
     if (isLikelyAIResponse(el)) processAIResponse(el);
   });
 
-  console.log("[Letigo] Monitoring active");
+  console.log("[Litigo] Monitoring active — " + (mossActive ? "Moss semantic mode" : "keyword fallback mode"));
 }
 
 // Heuristic: detect if element is likely an AI response
 function isLikelyAIResponse(el) {
   if (!el || !el.textContent || el.textContent.trim().length < 20) return false;
-  
+
   const classNames = el.className ? String(el.className).toLowerCase() : '';
   const tagName = el.tagName.toLowerCase();
-  
-  // Common AI response indicators
+
   const aiIndicators = [
     'assistant', 'message-ai', 'ai-message', 'bot-message',
     'response', 'chat-response', 'model-response',
     'claude', 'gpt', 'gemini', 'copilot'
   ];
-  
-  // Check parent classes too
+
   const parentClass = el.parentElement?.className ? String(el.parentElement.className).toLowerCase() : '';
-  
-  const hasAIIndicator = aiIndicators.some(ind => 
+
+  const hasAIIndicator = aiIndicators.some(ind =>
     classNames.includes(ind) || parentClass.includes(ind)
   );
-  
-  // Also match on common AI chat structures
-  const isStructured = tagName === 'div' && 
-    el.children.length > 0 && 
+
+  const isStructured = tagName === 'div' &&
+    el.children.length > 0 &&
     el.textContent.length > 30;
-  
-  // For demo chat pages, look for specific markers
-  const hasDemoMarker = el.id === 'demo-ai-response' || 
+
+  const hasDemoMarker = el.id === 'demo-ai-response' ||
     el.classList.contains('demo-ai-response') ||
     el.getAttribute && el.getAttribute('data-ai-response') === 'true';
-  
-  return hasAIIndicator || hasDemoMarker || 
+
+  return hasAIIndicator || hasDemoMarker ||
     (isStructured && (classNames.includes('message') || classNames.includes('chat')));
 }
 
-// Process an AI response element
-function processAIResponse(element) {
+// Process an AI response element — tries Moss first, falls back to keywords
+async function processAIResponse(element) {
   if (processedNodes.has(element)) return;
   processedNodes.add(element);
 
   const text = element.textContent;
   if (!text || text.trim().length < 20) return;
 
-  const violations = validateText(text);
-  
+  let violations = [];
+  let usedMoss = false;
+  let latencyMs = null;
+
+  // ============================================================
+  // PATH 1: Moss Semantic Validation (sub-10ms, meaning-based)
+  // Asks background service worker to run Moss WASM query
+  // ============================================================
+  if (mossActive) {
+    try {
+      const contextWindow = text.substring(0, 200);
+      const response = await new Promise((resolve) => {
+        chrome.runtime.sendMessage({
+          action: "validateSemantic",
+          text: text,
+          context: contextWindow
+        }, resolve);
+      });
+
+      if (response && response.mossActive && response.violations !== null) {
+        violations = response.violations;
+        usedMoss = true;
+        if (violations.length > 0) {
+          latencyMs = violations[0].latencyMs;
+        }
+        console.log(`[Litigo] Moss semantic: ${violations.length} violations`);
+      }
+    } catch (e) {
+      console.warn("[Litigo] Moss query failed, falling back to keywords:", e);
+    }
+  }
+
+  // ============================================================
+  // PATH 2: Keyword Fallback (when Moss not bundled)
+  // ============================================================
+  if (!usedMoss) {
+    violations = validateTextKeyword(text);
+  }
+
+  // Apply visual feedback
   if (violations.length > 0) {
-    highlightViolations(element, violations);
-    chrome.runtime.sendMessage({ action: "logViolation" });
+    highlightViolations(element, violations, usedMoss);
+    chrome.runtime.sendMessage({ action: "logViolation", latencyMs });
     currentStats.violationsCaught++;
-    showComplianceBadge(element, violations);
+    showComplianceBadge(element, violations, usedMoss, latencyMs);
   } else {
     chrome.runtime.sendMessage({ action: "logCheck" });
+    showCleanBadge(element, usedMoss);
   }
+
   currentStats.totalChecks++;
 }
 
-// Validate text against all enabled rules
-function validateText(text) {
+// ============================================================
+// KEYWORD FALLBACK VALIDATION
+// Used when Moss WASM is not bundled in the extension
+// ============================================================
+function validateTextKeyword(text) {
   const violations = [];
   const lowerText = text.toLowerCase();
 
@@ -138,19 +176,20 @@ function validateText(text) {
                 rule: rule.text,
                 keyword: keyword,
                 type: "forbidden",
-                matchedText: findMatch(text, keyword)
+                matchedText: findMatch(text, keyword),
+                semantic: false
               });
             }
           });
         } else {
-          // Fallback: check if rule text itself appears
           const ruleWords = rule.text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(w => w.length > 3);
           const matches = ruleWords.filter(w => lowerText.includes(w));
           if (matches.length >= 2) {
             violations.push({
               rule: rule.text,
               type: "forbidden",
-              matchedText: matches.join(", ")
+              matchedText: matches.join(", "),
+              semantic: false
             });
           }
         }
@@ -163,7 +202,8 @@ function validateText(text) {
             rule: rule.text,
             type: "length",
             wordCount: wordCount,
-            limit: 50
+            limit: 50,
+            semantic: false
           });
         }
         break;
@@ -175,7 +215,8 @@ function validateText(text) {
             violations.push({
               rule: rule.text,
               type: "format",
-              issue: "No bullet points found"
+              issue: "No bullet points found",
+              semantic: false
             });
           }
         }
@@ -187,7 +228,8 @@ function validateText(text) {
           violations.push({
             rule: rule.text,
             type: "citation",
-            issue: "Factual claim without citation"
+            issue: "Factual claim without citation",
+            semantic: false
           });
         }
         break;
@@ -199,7 +241,8 @@ function validateText(text) {
             violations.push({
               rule: rule.text,
               type: "style",
-              issue: `${complexWords} complex words detected`
+              issue: `${complexWords} complex words detected`,
+              semantic: false
             });
           }
         }
@@ -220,7 +263,6 @@ function findMatch(text, keyword) {
 }
 
 function containsFactualClaim(text) {
-  // Simple heuristic: look for numbers, dates, statistics
   return /\d+(\.\d+)?%|\d{4}|percent|according to|study shows|research found/i.test(text);
 }
 
@@ -231,7 +273,7 @@ function countComplexWords(text) {
 }
 
 // Highlight violations in the DOM
-function highlightViolations(element, violations) {
+function highlightViolations(element, violations, usedMoss) {
   violations.forEach(v => {
     if (v.matchedText) {
       try {
@@ -244,19 +286,19 @@ function highlightViolations(element, violations) {
             const range = document.createRange();
             range.setStart(node, idx);
             range.setEnd(node, idx + v.matchedText.length);
-            
+
             const highlight = document.createElement('span');
-            highlight.className = 'letigo-violation';
-            highlight.title = `Letigo: "${v.rule}" — violation caught`;
+            highlight.className = 'litigo-violation' + (usedMoss ? ' litigo-semantic' : '');
+            const modeLabel = usedMoss ? 'semantic detection' : 'keyword match';
+            highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught${v.confidence ? ` (confidence: ${Math.round(v.confidence * 100)}%)` : ''}`;
             highlight.textContent = range.toString();
-            
+
             range.deleteContents();
             range.insertNode(highlight);
             break;
           }
         }
       } catch (e) {
-        // If DOM manipulation fails, add a marker instead
         addViolationMarker(element, v);
       }
     } else {
@@ -267,34 +309,54 @@ function highlightViolations(element, violations) {
 
 function addViolationMarker(element, violation) {
   const marker = document.createElement('span');
-  marker.className = 'letigo-marker';
-  marker.title = `Letigo: "${violation.rule}" — ${violation.issue || 'violation'}`;
+  marker.className = 'litigo-marker';
+  marker.title = `Litigo: "${violation.rule}" — ${violation.issue || 'violation'}`;
   marker.textContent = '⚠';
   element.appendChild(marker);
 }
 
-// Show compliance score badge
-function showComplianceBadge(element, violations) {
-  // Don't add duplicate badges
-  if (element.querySelector('.letigo-badge')) return;
-  if (element.closest('.letigo-badge')) return;
+// Show compliance score badge with mode indicator
+function showComplianceBadge(element, violations, usedMoss, latencyMs) {
+  if (element.querySelector('.litigo-badge')) return;
+  if (element.closest('.litigo-badge')) return;
 
   const badge = document.createElement('div');
-  badge.className = 'letigo-badge';
-  
-  const totalWords = element.textContent.split(/\s+/).length;
+  badge.className = 'litigo-badge';
+
   const violationCount = violations.length;
   const score = Math.max(0, Math.min(100, Math.round(100 - (violationCount * 15))));
-  
+  const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword';
+  const latencyLabel = latencyMs ? ` · ${latencyMs}ms` : '';
+
   badge.innerHTML = `
-    <div class="letigo-badge-inner">
-      <span class="letigo-badge-icon">🛡️</span>
-      <span class="letigo-badge-score">Compliance: ${score}%</span>
-      <span class="letigo-badge-detail">${violationCount} violation${violationCount > 1 ? 's' : ''} caught</span>
+    <div class="litigo-badge-inner ${score < 70 ? 'low-score' : ''}">
+      <span class="litigo-badge-icon">🛡️</span>
+      <span class="litigo-badge-score">Compliance: ${score}%</span>
+      <span class="litigo-badge-detail">${violationCount} violation${violationCount > 1 ? 's' : ''} · ${modeLabel}${latencyLabel}</span>
     </div>
   `;
-  
-  // Insert after the element
+
+  element.style.position = 'relative';
+  element.style.paddingBottom = element.style.paddingBottom || '8px';
+  element.appendChild(badge);
+}
+
+// Show clean badge when no violations found
+function showCleanBadge(element, usedMoss) {
+  if (element.querySelector('.litigo-badge')) return;
+
+  const badge = document.createElement('div');
+  badge.className = 'litigo-badge';
+  const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword';
+
+  badge.innerHTML = `
+    <div class="litigo-badge-inner">
+      <span class="litigo-badge-icon">🛡️</span>
+      <span class="litigo-badge-score">Compliance: 100%</span>
+      <span class="litigo-badge-detail">All rules satisfied · ${modeLabel}</span>
+    </div>
+  `;
+
   element.style.position = 'relative';
   element.style.paddingBottom = element.style.paddingBottom || '8px';
   element.appendChild(badge);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Letigo Test — AI Chat Simulation</title>
+  <title>Litigo Test — AI Chat Simulation</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,7 +23,7 @@
       justify-content: space-between;
     }
     .test-header h1 { font-size: 16px; font-weight: 600; font-family: inherit; }
-    .letigo-status {
+    .litigo-status {
       padding: 6px 14px;
       background: rgba(0, 204, 109, 0.1);
       border: 1px solid rgba(0, 204, 109, 0.25);
@@ -83,7 +83,7 @@
       color: #333;
     }
     .demo-ai-response {
-      /* This class triggers Letigo's content script */
+      /* This class triggers Litigo's content script */
       position: relative;
     }
     .input-area {
@@ -190,8 +190,8 @@
 <body>
 
   <div class="test-header">
-    <h1>🧪 Letigo Test Environment — AI Chat Simulation</h1>
-    <span class="letigo-status">🛡️ Letigo Active — Rules Loaded</span>
+    <h1>🧪 Litigo Test Environment — AI Chat Simulation</h1>
+    <span class="litigo-status">🛡️ Litigo Active — Rules Loaded</span>
   </div>
 
   <!-- Rules Panel (simulates popup info) -->
@@ -299,7 +299,7 @@
           const safeMatch = v.matchedText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           const regex = new RegExp(`(${safeMatch})`, 'gi');
           element.innerHTML = html.replace(regex, 
-            '<span style="background:rgba(255,107,107,0.12);color:#D64545;text-decoration:line-through;padding:1px 3px;border-radius:3px;cursor:help;" title="Letigo: &quot;'+v.rule+'&quot; — violation caught">$1⚠</span>'
+            '<span style="background:rgba(255,107,107,0.12);color:#D64545;text-decoration:line-through;padding:1px 3px;border-radius:3px;cursor:help;" title="Litigo: &quot;'+v.rule+'&quot; — violation caught">$1⚠</span>'
           );
         }
       });
@@ -333,7 +333,7 @@
         stats.violationsCaught++;
         highlightViolations(element, violations);
         addComplianceBadge(element, violations);
-        console.log('[Letigo] Violations caught:', violations);
+        console.log('[Litigo] Violations caught:', violations);
       } else {
         const badge = document.createElement('div');
         badge.style.cssText = `
@@ -402,7 +402,7 @@
       setTimeout(() => {
         const bubble = msg.querySelector('.chat-bubble');
         bubble.innerHTML = text.replace(/\n/g, '<br>');
-        // Process with Letigo validation
+        // Process with Litigo validation
         processAIResponse(bubble);
         container.scrollTop = container.scrollHeight;
       }, 1200);

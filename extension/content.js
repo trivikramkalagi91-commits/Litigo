@@ -35,9 +35,9 @@ chrome.runtime.onMessage.addListener((message) => {
 
 // ============================================================
 // DELIVERABLE 1 — PRE-INJECTION SYSTEM
-// Silently appends active rules to user prompts before sending
+// Silently appends active rules to EVERY user prompt before sending
 // Format: "[ENFORCE: rule1; rule2; rule3]" (invisible to user)
-// Works on ChatGPT, Claude, Gemini, Perplexity, DeepSeek
+// Works reliably on ChatGPT, Claude, Gemini, Perplexity, DeepSeek
 // ============================================================
 function setupPreInjection() {
   const getActiveRuleString = () => {
@@ -225,8 +225,8 @@ function handleStreamingOrFullResponse(element) {
 }
 
 // ============================================================
-// STREAMING ENFORCEMENT
-// Truncates displayed text live if word limit breached
+// STREAMING ENFORCEMENT & WARNING PLACEMENT
+// Appends warning marker cleanly at the VERY BOTTOM of the AI response card
 // ============================================================
 function enforceStreamingWordLimit(element) {
   const lengthRule = rules.find(r => r.enabled && r.type === 'length');
@@ -240,13 +240,13 @@ function enforceStreamingWordLimit(element) {
 
   if (words.length > limit) {
     if (!element.querySelector('.litigo-warning')) {
-      const warningMarker = document.createElement('span');
+      const warningMarker = document.createElement('div');
       warningMarker.className = 'litigo-violation litigo-warning';
-      warningMarker.style.cssText = 'background:rgba(255,107,107,0.15);color:#D64545;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px;';
-      warningMarker.title = `Litigo Enforcement: Exceeded ${limit} words limit`;
-      warningMarker.textContent = ` ⚠ [Word limit of ${limit} words exceeded — truncated]`;
+      warningMarker.style.cssText = 'background:rgba(255,107,107,0.12);color:#D64545;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;margin-top:8px;display:inline-block;';
+      warningMarker.title = `Litigo Enforcement: Exceeded ${limit} words limit (${words.length} words total)`;
+      warningMarker.textContent = `⚠ Exceeded length limit of ${limit} words (${words.length} words typed)`;
       element.appendChild(warningMarker);
-      console.log(`[Litigo] Streaming enforcement triggered: ${words.length} > ${limit} words`);
+      console.log(`[Litigo] Streaming enforcement triggered cleanly at bottom: ${words.length} > ${limit} words`);
     }
   }
 }
@@ -306,7 +306,7 @@ async function processAIResponse(element) {
     });
   } catch (e) {}
 
-  // Apply visual feedback & badges into EXISTING UI
+  // Apply visual feedback & badges cleanly at bottom into EXISTING UI
   if (violations.length > 0) {
     highlightViolations(element, violations, usedMoss);
     chrome.runtime.sendMessage({ action: "logViolation", latencyMs });
@@ -366,13 +366,11 @@ function validateTextKeyword(text) {
         const limit = limitMatch ? parseInt(limitMatch[1]) : 50;
         const words = text.trim().split(/\s+/);
         if (words.length > limit) {
-          const 50thWord = words[Math.min(limit - 1, words.length - 1)];
           violations.push({
             rule: rule.text,
             type: "length",
             wordCount: words.length,
             limit: limit,
-            matchedText: 50thWord,
             semantic: false
           });
         }
@@ -416,9 +414,9 @@ function findMatch(text, keyword) {
   return keyword;
 }
 
-// Highlight violations in DOM (Strikethrough & Warning Markers)
+// Highlight forbidden phrase violations in DOM (Strikethrough)
 function highlightViolations(element, violations, usedMoss) {
-  violations.forEach(v => {
+  violations.filter(v => v.type !== 'length').forEach(v => {
     if (v.matchedText) {
       try {
         const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
@@ -432,18 +430,11 @@ function highlightViolations(element, violations, usedMoss) {
             range.setEnd(node, idx + v.matchedText.length);
 
             const highlight = document.createElement('span');
-            if (v.type === 'length') {
-              highlight.className = 'litigo-violation litigo-warning';
-              highlight.style.cssText = 'background:rgba(255,107,107,0.2);color:#D64545;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:4px;';
-              highlight.title = `Litigo Enforcement: Exceeded ${v.limit} words limit`;
-              highlight.textContent = `${range.toString()} ⚠ [Word limit of ${v.limit} words exceeded]`;
-            } else {
-              highlight.className = 'litigo-violation' + (usedMoss ? ' litigo-semantic' : '');
-              highlight.style.cssText = 'text-decoration:line-through;background:rgba(255,107,107,0.15);color:#D64545;padding:1px 4px;border-radius:3px;';
-              const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword match';
-              highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught`;
-              highlight.textContent = range.toString();
-            }
+            highlight.className = 'litigo-violation' + (usedMoss ? ' litigo-semantic' : '');
+            highlight.style.cssText = 'text-decoration:line-through;background:rgba(255,107,107,0.15);color:#D64545;padding:1px 4px;border-radius:3px;';
+            const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword match';
+            highlight.title = `Litigo [${modeLabel}]: "${v.rule}" — violation caught`;
+            highlight.textContent = range.toString();
 
             range.deleteContents();
             range.insertNode(highlight);
@@ -473,7 +464,7 @@ function highlightContradiction(element, contradictionClaim) {
   } catch(e) {}
 }
 
-// Feed results into EXISTING compliance badge
+// Feed results into EXISTING compliance badge cleanly positioned at the BOTTOM of the response
 function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData) {
   if (element.children.length > 25) return;
   if (element.querySelector('.litigo-badge')) return;

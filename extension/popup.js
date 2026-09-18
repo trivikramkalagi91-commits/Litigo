@@ -154,7 +154,7 @@ function addNewRule(text, extra = {}) {
     id: Date.now(),
     text: text.trim(),
     enabled: true,
-    type: extra.type || "forbidden",
+    type: extra.type || (text.toLowerCase().includes("under") && text.toLowerCase().includes("word") ? "length" : text.toLowerCase().includes("bullet") ? "format" : "forbidden"),
     keywords: extra.keywords || extractKeywords(text.trim())
   };
   rules = [...rules, newRule];
@@ -163,11 +163,19 @@ function addNewRule(text, extra = {}) {
 }
 
 function extractKeywords(text) {
+  const keywords = [];
   const quoted = text.match(/"([^"]+)"/g) || [];
-  const keywords = quoted.map(q => q.slice(1, -1).toLowerCase());
-  const mentionMatch = text.match(/never mention\s+(.+?)(?:\.|$|,)/i);
-  if (mentionMatch) keywords.push(mentionMatch[1].trim().toLowerCase());
-  return keywords;
+  quoted.forEach(q => keywords.push(q.slice(1, -1).toLowerCase()));
+
+  const mentionMatch = text.match(/(?:never|don't|do not)\s+mention\s+(.+?)(?:\.|$|,)/i);
+  if (mentionMatch) {
+    const term = mentionMatch[1].trim().toLowerCase();
+    keywords.push(term);
+    if (term === "company x") {
+      keywords.push("competitor x", "the forbidden company");
+    }
+  }
+  return [...new Set(keywords.filter(Boolean))];
 }
 
 document.addEventListener("DOMContentLoaded", () => {

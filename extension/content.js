@@ -37,6 +37,7 @@ chrome.runtime.onMessage.addListener((message) => {
 // DELIVERABLE 1 — PRE-INJECTION SYSTEM
 // Silently appends active rules to user prompts before sending
 // Format: "[ENFORCE: rule1; rule2; rule3]" (invisible to user)
+// Works on ChatGPT, Claude, Gemini, Perplexity, DeepSeek
 // ============================================================
 function setupPreInjection() {
   const getActiveRuleString = () => {
@@ -45,35 +46,45 @@ function setupPreInjection() {
     return `[ENFORCE: ${active.map(r => r.text).join('; ')}]`;
   };
 
+  const findActiveInput = () => {
+    const selectors = [
+      '#prompt-textarea',
+      'div[contenteditable="true"]',
+      '.ProseMirror',
+      '[role="textbox"]',
+      'textarea',
+      'input[type="text"]'
+    ];
+    for (const sel of selectors) {
+      const el = document.querySelector(sel);
+      if (el && (el.offsetWidth > 0 || el.offsetHeight > 0)) return el;
+    }
+    return document.activeElement;
+  };
+
   const handlePromptSubmit = (event) => {
     if (!extensionEnabled) return;
     const ruleString = getActiveRuleString();
     if (!ruleString) return;
 
-    const target = event.target;
-    let inputEl = null;
-
-    if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.getAttribute('contenteditable') === 'true') {
-      inputEl = target;
-    } else {
-      inputEl = document.querySelector('textarea, input[type="text"], [contenteditable="true"]');
-    }
-
+    const inputEl = findActiveInput();
     if (!inputEl) return;
 
-    // Only inject if not already injected
     if (inputEl.tagName === 'TEXTAREA' || inputEl.tagName === 'INPUT') {
       if (!inputEl.value.includes('[ENFORCE:')) {
         const original = inputEl.value;
         inputEl.value = `${original}\n\n${ruleString}`;
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-        console.log("[Litigo] Pre-injected enforcement prompt:", ruleString);
+        console.log("[Litigo] Pre-injected enforcement prompt into textarea/input:", ruleString);
       }
-    } else if (inputEl.getAttribute('contenteditable') === 'true') {
+    } else if (inputEl.getAttribute('contenteditable') === 'true' || inputEl.classList.contains('ProseMirror')) {
       if (!inputEl.textContent.includes('[ENFORCE:')) {
-        inputEl.textContent = `${inputEl.textContent}\n\n${ruleString}`;
+        const p = inputEl.querySelector('p') || inputEl;
+        p.textContent = `${p.textContent}\n\n${ruleString}`;
+        inputEl.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
-        console.log("[Litigo] Pre-injected enforcement prompt in contenteditable:", ruleString);
+        inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log("[Litigo] Pre-injected enforcement prompt into rich-text contenteditable:", ruleString);
       }
     }
   };
@@ -85,7 +96,7 @@ function setupPreInjection() {
     }
   }, true);
 
-  // Intercept click on send buttons in capture phase
+  // Intercept click on send buttons in capture phase (ChatGPT, Claude, Gemini, etc.)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('button, [role="button"]');
     if (btn) {
@@ -98,7 +109,7 @@ function setupPreInjection() {
   }, true);
 }
 
-// Hide pre-injected [ENFORCE: ...] string from visible user speech bubbles
+// Hide pre-injected [ENFORCE: ...] string from visible user speech bubbles across LLM sites
 function hideEnforceTextFromUserBubbles() {
   document.querySelectorAll('*').forEach(el => {
     if (el.children.length === 0 && el.textContent && el.textContent.includes('[ENFORCE:')) {
@@ -145,10 +156,10 @@ function startMonitoring() {
     if (isLikelyAIResponse(el)) handleStreamingOrFullResponse(el);
   });
 
-  console.log("[Litigo] Monitoring active — " + (mossActive ? "Moss WASM mode" : "keyword fallback mode"));
+  console.log("[Litigo] Universal monitoring active — " + (mossActive ? "Moss WASM mode" : "keyword fallback mode"));
 }
 
-// Strict Heuristic: ONLY detect AI response elements, NEVER user prompt bubbles or inputs
+// Universal Heuristic: Explicitly detect AI response elements for ChatGPT, Claude, Gemini, Perplexity & DeepSeek
 function isLikelyAIResponse(el) {
   if (!el || !el.textContent || el.textContent.trim().length < 20) return false;
 
@@ -157,19 +168,31 @@ function isLikelyAIResponse(el) {
   if (el.getAttribute && el.getAttribute('contenteditable') === 'true') return false;
   if (el.closest && (el.closest('form') || el.closest('.input-area') || el.closest('[contenteditable="true"]') || el.closest('user-query'))) return false;
 
-  // EXCLUDE User message bubbles
+  // EXCLUDE User message containers across ChatGPT, Claude, Gemini, Perplexity
   const classNames = el.className ? String(el.className).toLowerCase() : '';
   const idStr = el.id ? String(el.id).toLowerCase() : '';
   const parentClass = el.parentElement?.className ? String(el.parentElement.className).toLowerCase() : '';
+  const authorRole = el.getAttribute ? (el.getAttribute('data-message-author-role') || '').toLowerCase() : '';
 
+  if (authorRole === 'user') return false;
   if (classNames.includes('user') || parentClass.includes('user') || idStr.includes('user')) return false;
-  if (el.closest && (el.closest('.user-message') || el.closest('[data-message-author-role="user"]') || el.closest('.user-query-container'))) return false;
+  if (el.closest && (
+    el.closest('[data-message-author-role="user"]') ||
+    el.closest('.user-message') ||
+    el.closest('.font-user-message') ||
+    el.closest('user-query')
+  )) return false;
 
-  // MUST BE AI Response
+  // DETECT Assistant/Model AI Messages
+  // ChatGPT: [data-message-author-role="assistant"], .agent-turn, .markdown.prose
+  // Claude: .font-claude-message, [data-is-streaming], div.prose
+  // Gemini: model-response, .message-content, .response-container-content
+  if (authorRole === 'assistant') return true;
+
   const aiIndicators = [
-    'assistant', 'message-ai', 'ai-message', 'bot-message',
+    'assistant', 'font-claude-message', 'message-ai', 'ai-message', 'bot-message',
     'chat-response', 'model-response', 'response-container-content',
-    'claude', 'gpt', 'gemini', 'copilot'
+    'agent-turn', 'claude', 'gpt', 'gemini', 'copilot'
   ];
 
   const hasAIIndicator = aiIndicators.some(ind =>
@@ -180,25 +203,17 @@ function isLikelyAIResponse(el) {
     el.classList.contains('demo-ai-response') ||
     (el.getAttribute && el.getAttribute('data-ai-response') === 'true');
 
-  const isAIMessageRole = el.getAttribute && (
-    el.getAttribute('data-message-author-role') === 'assistant' ||
-    el.getAttribute('data-is-assistant') === 'true'
-  );
-
-  return hasAIIndicator || hasDemoMarker || isAIMessageRole || (
-    tagName === 'div' &&
-    (classNames.includes('message-content') || classNames.includes('markdown') || classNames.includes('model-response')) &&
+  const isProseContainer = (classNames.includes('prose') || classNames.includes('markdown')) &&
     !classNames.includes('user') &&
-    el.children.length > 0 &&
-    el.textContent.length > 30
-  );
+    el.textContent.length > 35;
+
+  return hasAIIndicator || hasDemoMarker || isProseContainer;
 }
 
 // Real-time streaming enforcement + Post-generation validation
 function handleStreamingOrFullResponse(element) {
   enforceStreamingWordLimit(element);
 
-  // Debounce post-generation validation until stream pauses/completes
   if (element.litigoTimer) clearTimeout(element.litigoTimer);
   element.litigoTimer = setTimeout(() => {
     processAIResponse(element);
@@ -328,6 +343,18 @@ function validateTextKeyword(text) {
               });
             }
           });
+        } else {
+          // If no explicit keyword list, match entity terms or rule words
+          const entityMatch = rule.text.match(/(?:never|don't|do not)\s+mention\s+(.+?)(?:\.|$|,)/i);
+          const targetTerm = entityMatch ? entityMatch[1].trim().toLowerCase() : null;
+          if (targetTerm && lowerText.includes(targetTerm)) {
+            violations.push({
+              rule: rule.text,
+              type: "forbidden",
+              matchedText: findMatch(text, targetTerm),
+              semantic: false
+            });
+          }
         }
         break;
 
@@ -436,7 +463,7 @@ function highlightContradiction(element, contradictionClaim) {
 
 // Feed results into EXISTING compliance badge
 function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData) {
-  if (element.children.length > 25) return; // Prevent attaching to entire chat body
+  if (element.children.length > 25) return;
   if (element.querySelector('.litigo-badge')) return;
   if (element.closest('.litigo-badge')) return;
 
@@ -463,7 +490,7 @@ function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData
 }
 
 function showCleanBadge(element, usedMoss, truthData) {
-  if (element.children.length > 25) return; // Prevent attaching to entire chat body
+  if (element.children.length > 25) return;
   if (element.querySelector('.litigo-badge')) return;
 
   const badge = document.createElement('div');

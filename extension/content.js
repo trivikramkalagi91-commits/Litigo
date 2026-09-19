@@ -9,6 +9,11 @@ let currentStats = { totalChecks: 0, violationsCaught: 0 };
 
 // Initialize
 function init() {
+  if (window.location.hostname.includes('github.com') || window.location.hostname.includes('vercel.app')) {
+    console.log("[Litigo] Repository/Development domain detected — skipping extension monitoring.");
+    return;
+  }
+
   chrome.runtime.sendMessage({ action: "getRules" }, (response) => {
     if (response) {
       rules = response.rules || [];

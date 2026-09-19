@@ -99,9 +99,7 @@ flowchart TB
     MWE -->|Semantic Search| TLE
     ETE -->|Log Metrics| IDB
     ETE -->|Validation Results| ENF
-    TLE -->|Trigger Feedback| ENF
-    ENF -->|Visual Overlay| CS
-    PIE -->|Pre-injected [ENFORCE]| LLM
+    PIE -->|"Pre-injected ENFORCE rules"| LLM
     CS -->|Streams Text| MWE
     LLM -->|Streamed Output| CS
 

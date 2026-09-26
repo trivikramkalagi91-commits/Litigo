@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Litigo Enterprise Dashboard — Next.js & LiveKit Guardrails',
   description: 'Enterprise Rule Management, LiveKit Real-Time Voice Guardrails, and Moss WASM Latency Tracing',
+  icons: { icon: '/favicon.png' },
 };
 
 export default function RootLayout({

@@ -492,9 +492,11 @@ function showComplianceBadge(element, violations, usedMoss, latencyMs, truthData
   const latencyLabel = latencyMs ? ` · ${latencyMs}ms` : '';
   const truthLabel = (truthData && truthData.totalClaims > 0) ? ` · Truth: ${truthData.truthScore}%` : '';
 
+  const iconUrl = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL ? chrome.runtime.getURL('icons/icon48.png') : 'icons/icon48.png';
+
   badge.innerHTML = `
     <div class="litigo-badge-inner ${score < 70 ? 'low-score' : ''}">
-      <span class="litigo-badge-icon">🛡️</span>
+      <span class="litigo-badge-icon"><img src="${iconUrl}" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;object-fit:contain;"></span>
       <span class="litigo-badge-score">Compliance: ${score}%</span>
       <span class="litigo-badge-detail">${violationCount} violation${violationCount > 1 ? 's' : ''} · ${modeLabel}${latencyLabel}${truthLabel}</span>
     </div>
@@ -514,10 +516,11 @@ function showCleanBadge(element, usedMoss, truthData) {
   badge.className = 'litigo-badge';
   const modeLabel = usedMoss ? '🧠 Moss semantic' : '🔍 Keyword';
   const truthLabel = (truthData && truthData.totalClaims > 0) ? ` · Truth: ${truthData.truthScore}% (🟢 Verified)` : '';
+  const iconUrl = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL ? chrome.runtime.getURL('icons/icon48.png') : 'icons/icon48.png';
 
   badge.innerHTML = `
     <div class="litigo-badge-inner">
-      <span class="litigo-badge-icon">🛡️</span>
+      <span class="litigo-badge-icon"><img src="${iconUrl}" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;object-fit:contain;"></span>
       <span class="litigo-badge-score">Compliance: 100%</span>
       <span class="litigo-badge-detail">All rules satisfied · ${modeLabel}${truthLabel}</span>
     </div>

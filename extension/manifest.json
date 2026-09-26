@@ -35,7 +35,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["content.css", "moss.wasm"],
+      "resources": ["content.css", "moss.wasm", "icons/*.png"],
       "matches": ["<all_urls>"]
     }
   ],

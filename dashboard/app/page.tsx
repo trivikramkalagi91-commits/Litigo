@@ -29,6 +29,7 @@ export default function EnterpriseDashboard() {
       <div className="flex justify-between items-center pb-6 border-b border-slate-800 mb-8">
         <div>
           <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Litigo Logo" className="w-10 h-10 object-contain" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-emerald-400 bg-clip-text text-transparent">
               Litigo Enterprise Portal
             </h1>

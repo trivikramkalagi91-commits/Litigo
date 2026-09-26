@@ -217,6 +217,42 @@ document.addEventListener("DOMContentLoaded", () => {
       addNewRule(data.text, data);
     });
   });
+
+  // Truth Layer File Upload Handler
+  const uploadBtn = document.getElementById("uploadDocBtn");
+  const fileInput = document.getElementById("truthDocInput");
+  const statusDiv = document.getElementById("truthDocStatus");
+
+  if (uploadBtn && fileInput) {
+    uploadBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const textContent = evt.target.result;
+        statusDiv.style.display = "block";
+        statusDiv.style.color = "#0284c7";
+        statusDiv.textContent = `Processing '${file.name}' into Moss WASM...`;
+
+        sendMessage({
+          action: "ingestDocument",
+          filename: file.name,
+          textContent: textContent
+        }, (res) => {
+          if (res && res.success) {
+            statusDiv.style.color = "#059669";
+            statusDiv.textContent = `✓ Ingested '${file.name}' (${res.chunksCount} WASM vectors active)`;
+          } else {
+            statusDiv.style.color = "#dc2626";
+            statusDiv.textContent = `Error ingesting document`;
+          }
+        });
+      };
+      reader.readAsText(file);
+    });
+  }
 });
 
 setInterval(loadStats, 2000);

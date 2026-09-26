@@ -40,6 +40,15 @@
       </div>
     </div>
 
+    <div class="truth-section" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.08);">
+      <div class="section-label" style="margin-bottom: 6px; font-weight: 700; font-size: 11px; color: #334155;">📄 TRUTH LAYER GROUNDING</div>
+      <input type="file" id="truthDocInput" accept=".txt,.md,.json,.pdf" style="display:none;">
+      <button id="uploadDocBtn" style="width:100%; padding: 7px 10px; background: #eff6ff; color: #1d4ed8; border: 1px dashed #93c5fd; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <span>📄</span> <span>Upload Reference Doc (.txt / .md)</span>
+      </button>
+      <div id="truthDocStatus" style="font-size: 10.5px; color: #059669; font-weight: 600; margin-top: 5px; text-align: center; display: none;"></div>
+    </div>
+
     <div class="footer">
       <div class="stats">
         <span id="statChecks">0 checks</span>

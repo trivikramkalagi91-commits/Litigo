@@ -61,7 +61,7 @@
       z-index: 100;
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 20px;
       padding: 10px 14px 10px 20px;
       background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(20px);
@@ -69,6 +69,7 @@
       border-radius: 100px;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
       border: 1px solid rgba(0, 0, 0, 0.06);
+      white-space: nowrap;
     }
 
     .nav-logo {
@@ -79,6 +80,7 @@
       color: var(--ink);
       display: flex;
       align-items: center;
+      white-space: nowrap;
     }
 
     .nav-logo span {
@@ -88,9 +90,10 @@
 
     .nav-links {
       display: flex;
-      gap: 24px;
+      gap: 20px;
       list-style: none;
       align-items: center;
+      white-space: nowrap;
     }
 
     .nav-links a {
@@ -98,6 +101,7 @@
       font-weight: 500;
       color: var(--ink-soft);
       transition: color 0.2s;
+      white-space: nowrap;
     }
 
     .nav-links a:hover { color: var(--ink); }
@@ -106,6 +110,7 @@
       width: 1px;
       height: 20px;
       background: rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
     }
 
     .nav-cta {
@@ -116,6 +121,7 @@
       font-weight: 600;
       border-radius: 100px;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .nav-cta:hover { background: #000; transform: translateY(-1px); }
